@@ -1,0 +1,20 @@
+{
+  "name": "baneveryone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "tmi.js": "^1.8.5",
+    "tmijs-commander": "^2.2.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.3.0"
+  }
+}
