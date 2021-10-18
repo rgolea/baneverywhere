@@ -10,7 +10,7 @@ describe('AppService', () => {
       providers: [AppService],
     }).compile();
 
-    service = app.get<AppService>(AppService);
+    service = app.get<baneverywhere-Service>(AppService);
   });
 
   describe('getData', () => {

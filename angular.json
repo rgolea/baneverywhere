@@ -51,7 +51,11 @@
               "apps/baneverywhere/src/favicon.ico",
               "apps/baneverywhere/src/assets"
             ],
-            "styles": ["apps/baneverywhere/src/styles.scss"],
+            "styles": [
+              "apps/baneverywhere/src/styles.scss",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "apps/baneverywhere/src/assets/styles/tailwind.css"
+            ],
             "scripts": []
           },
           "configurations": {
