@@ -5,7 +5,9 @@
     "module": "commonjs",
     "types": ["node"],
     "emitDecoratorMetadata": true,
-    "target": "es2015"
+    "target": "es2015",
+    "declaration": true,
+    "declarationDir": "./types"
   },
   "exclude": ["**/*.spec.ts"],
   "include": ["**/*.ts"]
