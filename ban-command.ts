@@ -6,8 +6,12 @@ export class BanCommand extends CommandExecutor {
     if(!author.mod && author.username !== channelToUsername(channel, '')) return;
     const [ user, ...reasonArr ] = args;
     const channels = client.getChannels();
-    await Promise.all(channels.map(async ch => {
-      return await client.ban(ch, user, `${reasonArr.join(' ')}`);
-    }));
+    try {
+      await Promise.all(channels.map(async ch => {
+        return await client.ban(ch, user, `${reasonArr.join(' ')}`);
+      }));
+    } catch(err){
+      client.say(channel, `There was an unexpected error`);
+    }
   }
 }

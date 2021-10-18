@@ -2,14 +2,17 @@ import { Client } from "tmi.js";
 import { Commander } from "tmijs-commander";
 import { BanCommand } from "./ban-command";
 import { JoinCommand } from "./join-command";
+import { config } from 'dotenv';
+
+config();
 
 const client = new Client({
 	options: { debug: true },
 	identity: {
-		username: '<USERNAME>',
-		password: 'oauth:<PASSWORD>' //OBTAIN PASSWORD: http://twitchapps.com/tmi/
+		username: process.env.BAN_BOT_USER,
+		password: process.env.BAN_BOT_PASSWORD //OBTAIN PASSWORD: http://twitchapps.com/tmi/
 	},
-	channels: [ '<channels>' ]
+	channels: [ 'rgolea' ]
 });
 
 client.connect().then(() => {
