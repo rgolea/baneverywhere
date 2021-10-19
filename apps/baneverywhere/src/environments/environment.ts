@@ -10,7 +10,6 @@ export const environment = {
     scope: 'user_read',
     appId: 'b361z2jtreid3u1demvx2v6xrvwfqr',
     authorizationBaseUrl: 'https://id.twitch.tv/oauth2/authorize',
-    responseType: 'code'
   } as WebOption
 };
 

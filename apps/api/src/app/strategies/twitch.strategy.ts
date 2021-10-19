@@ -1,39 +1,33 @@
-import { TwitchUserProfileAccess } from "@baneverywhere/api-interfaces";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy, StrategyOptions, TwitchProfile } from 'passport-twitch-latest';
+import * as TwitchTokenStrategy from "passport-twitch-token";
+import { TwitchUserProfile } from "@baneverywhere/api-interfaces";
 
 @Injectable()
-export class TwitchStrategy extends PassportStrategy(Strategy, 'twitch') {
+export class TwitchStrategy extends PassportStrategy(
+  TwitchTokenStrategy,
+  "twitch"
+) {
   constructor(
     readonly configService: ConfigService
-  ){
+  ) {
     super({
       clientID: configService.get<string>('TWITCH_CLIENT_ID'),
       clientSecret: configService.get<string>('TWITCH_CLIENT_SECRET'),
-      scope: 'user_read',
-      authorizationURL: `${configService.get<string>('DOMAIN') || 'http://localhost:3333'}/auth/twitch`,
-      callbackURL: `${configService.get<string>('DOMAIN') || 'http://localhost:3333'}/auth/twitch/callback`
-    } as StrategyOptions);
+      authorizationURL: "https://id.twitch.tv/oauth2/authorize",
+      tokenURL: "https://id.twitch.tv/oauth2/token",
+      profileURL: "https://api.twitch.tv/helix/users"
+    });
   }
 
-  async validate(
-    accessToken: string,
-    _: string,
-    profile: TwitchProfile
-  ): Promise<TwitchUserProfileAccess> {
-    const { login, profile_image_url } = profile;
-    const user = {
+  async validate(_: unknown, __: unknown, data: { _raw: string } = { _raw: '{}'}) {
+    const parsed = JSON.parse(data._raw);
+    const { id, login, profile_image_url }: TwitchUserProfile = parsed?.data?.[0] || {};
+    return {
+      id,
       login,
       profile_image_url
     };
-
-    const payload = {
-      user,
-      accessToken,
-    };
-
-    return payload;
   }
 }

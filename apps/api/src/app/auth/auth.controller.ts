@@ -1,29 +1,18 @@
-import { Controller, Get, HttpStatus, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
-  StatusResponse,
-  TwitchUserProfileAccess,
+  StatusResponse, TwitchUserProfile,
 } from '@baneverywhere/api-interfaces';
+import { TwitchProfile } from '../strategies/twitch-profile';
 
 @Controller('auth')
 export class AuthController {
   @Get('/twitch')
   @UseGuards(AuthGuard('twitch'))
-  async twitchLogin(): Promise<StatusResponse
-  > {
-    return {
-      statusCode: HttpStatus.OK
-    }
-  }
-
-  @Get('/twitch/callback')
-  @UseGuards(AuthGuard('twitch'))
-  async twitchLoginRedirect(
-    @Req() req: Request
-  ): Promise<StatusResponse<TwitchUserProfileAccess>> {
+  twitchProfile(@TwitchProfile() user: TwitchUserProfile): StatusResponse<TwitchUserProfile> {
     return {
       statusCode: HttpStatus.OK,
-      data: req['user'] as TwitchUserProfileAccess,
+      data: user
     };
   }
 }
