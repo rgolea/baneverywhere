@@ -4,7 +4,6 @@ import { MongooseModuleOptions } from '@nestjs/mongoose';
 export function mongooseConfigFactory(
   configService: ConfigService
 ): MongooseModuleOptions {
-  console.log(configService);
   return {
     uri:
       configService.get<string>('MONGODB_URI') ||
