@@ -8,7 +8,7 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app/app.module';
 
-async function bootstrap() {
+(async () => {
   const app = await NestFactory.create(AppModule, {
     cors: true
   });
@@ -16,6 +16,4 @@ async function bootstrap() {
   await app.listen(port, async () => {
     Logger.log('Listening at http://localhost:' + port + '/');
   });
-}
-
-bootstrap();
+})();
