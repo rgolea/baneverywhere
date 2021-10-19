@@ -21,13 +21,14 @@ export class TwitchStrategy extends PassportStrategy(
     });
   }
 
-  async validate(_: unknown, __: unknown, data: { _raw: string } = { _raw: '{}'}) {
+  async validate(_: unknown, __: unknown, data: { _raw: string } = { _raw: '{}'}): Promise<TwitchUserProfile> {
     const parsed = JSON.parse(data._raw);
-    const { id, login, profile_image_url }: TwitchUserProfile = parsed?.data?.[0] || {};
+    const { id: twitchId, login, profile_image_url, display_name } = parsed?.data?.[0] || {};
     return {
-      id,
+      twitchId,
       login,
-      profile_image_url
-    };
+      profile_image_url,
+      display_name
+    } as TwitchUserProfile;
   }
 }

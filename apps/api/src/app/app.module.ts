@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { TwitchStrategy } from './strategies/twitch.strategy';
 import { AuthModule } from './auth/auth.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { mongooseConfigFactory } from './db/mongodb-config';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -12,7 +14,12 @@ import { AuthModule } from './auth/auth.module';
       session: true,
       property: 'user'
     }),
-    AuthModule
+    AuthModule,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: mongooseConfigFactory,
+      inject: [ConfigService]
+    })
   ],
   providers: [TwitchStrategy]
 })
