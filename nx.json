@@ -23,18 +23,26 @@
     }
   },
   "projects": {
+    "api": {
+      "tags": []
+    },
+    "api-interfaces": {
+      "tags": []
+    },
     "baneverywhere": {
       "tags": []
     },
     "baneverywhere-e2e": {
       "tags": [],
       "implicitDependencies": ["baneverywhere"]
-    },
-    "api": {
-      "tags": []
-    },
-    "api-interfaces": {
-      "tags": []
     }
+  },
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
   }
 }

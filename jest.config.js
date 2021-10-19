@@ -1,3 +1,3 @@
-module.exports = {
-  projects: ['<rootDir>/apps/baneverywhere', '<rootDir>/apps/api'],
-};
+const { getJestProjects } = require('@nrwl/jest');
+
+module.exports = { projects: getJestProjects() };
