@@ -1,16 +1,11 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
-import { WebOption } from '@byteowls/capacitor-oauth2';
+import { OAUTH_ENV } from "./oauth.env";
 
 export const environment = {
   production: false,
-  oauth: {
-    redirectUrl: 'http://localhost:4200/auth',
-    scope: 'user_read',
-    appId: 'b361z2jtreid3u1demvx2v6xrvwfqr',
-    authorizationBaseUrl: 'https://id.twitch.tv/oauth2/authorize',
-  } as WebOption
+  oauth: OAUTH_ENV
 };
 
 /*
