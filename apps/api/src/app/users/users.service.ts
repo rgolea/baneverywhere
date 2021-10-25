@@ -13,7 +13,7 @@ export class UsersService {
 
   async createOrUpdateUser(profile: TwitchUserProfile): Promise<UserDocument> {
     return await this.userModel.findOneAndUpdate({
-      login: profile.login
+      twitchId: profile.twitchId
     }, {
       ...profile
     }, {

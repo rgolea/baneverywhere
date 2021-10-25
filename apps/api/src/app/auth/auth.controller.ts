@@ -1,24 +1,38 @@
-import { Controller, Get, HttpCode, HttpStatus, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
-  StatusResponse, TwitchUserProfile,
-} from '@baneverywhere/api-interfaces';
-import { TwitchProfile } from '../strategies/twitch-profile';
+  Controller,
+  Get,
+  Res,
+  HttpStatus,
+  UseGuards,
+  Response,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { TwitchUserProfile } from '@baneverywhere/api-interfaces';
+import { TwitchProfile } from '../core/strategies/twitch-profile';
 import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly usersService: UsersService
-  ){}
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService
+  ) {}
 
   @Get('/twitch')
   @UseGuards(AuthGuard('twitch'))
-  async twitchProfile(@TwitchProfile() user: TwitchUserProfile): Promise<StatusResponse<TwitchUserProfile>> {
-    await this.usersService.createOrUpdateUser(user);
-    return {
+  async twitchProfile(
+    @TwitchProfile() profile: TwitchUserProfile,
+    @Res() res
+  ): Promise<void> {
+    const { _id, twitchId, login } = (
+      await this.usersService.createOrUpdateUser(profile)
+    ).toJSON();
+    const token = this.jwtService.sign({ _id, twitchId, login });
+    res.setHeader('x-access-token', token);
+    res.json({
       statusCode: HttpStatus.OK,
-      data: user
-    };
+      data: profile,
+    });
   }
 }
