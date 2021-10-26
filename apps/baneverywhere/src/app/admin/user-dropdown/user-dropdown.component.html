@@ -11,7 +11,7 @@
       <img
         alt="..."
         class="w-full rounded-full align-middle border-none shadow-lg"
-        src="assets/img/team-1-800x800.jpg"
+        [src]="(auth$ | async)?.profile?.profile_image_url"
       />
     </span>
   </div>

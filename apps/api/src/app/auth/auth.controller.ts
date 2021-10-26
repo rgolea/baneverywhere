@@ -29,7 +29,8 @@ export class AuthController {
       await this.usersService.createOrUpdateUser(profile)
     ).toJSON();
     const token = this.jwtService.sign({ _id, twitchId, login });
-    res.setHeader('x-access-token', token);
+    res.setHeader('X-Access-Token', token);
+    res.setHeader('Access-Control-Expose-Headers', 'X-Access-Token');
     res.json({
       statusCode: HttpStatus.OK,
       data: profile,

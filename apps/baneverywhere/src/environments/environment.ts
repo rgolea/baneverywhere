@@ -5,6 +5,7 @@ import { OAUTH_ENV } from "./oauth.env";
 
 export const environment = {
   production: false,
+  API_URL: 'http://localhost:3333',
   oauth: OAUTH_ENV
 };
 

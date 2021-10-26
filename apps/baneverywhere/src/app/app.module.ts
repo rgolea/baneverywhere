@@ -8,8 +8,11 @@ import { AppComponent } from './app.component';
 // layouts
 import { AuthComponent } from './auth/auth.component';
 import { PagesDropdownComponent } from './components/dropdowns/pages-dropdown/pages-dropdown.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { environment } from '../environments/environment';
+import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
+import { StoreModule } from './store/store.module';
+import { TokenInterceptor } from './interceptors/token.interceptor';
 
 @NgModule({
   declarations: [
@@ -22,8 +25,17 @@ import { environment } from '../environments/environment';
     AppRoutingModule,
     HttpClientModule,
     NgxsModule.forRoot([], {
-      developmentMode: !environment.production
-    })
+      developmentMode: !environment.production,
+    }),
+    NgxsReduxDevtoolsPluginModule.forRoot(),
+    StoreModule,
+  ],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent],
 })
