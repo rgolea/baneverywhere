@@ -14,14 +14,16 @@ const routes: Routes = [
           import('./settings/settings.module').then((m) => m.SettingsModule),
       },
       {
-        pathMatch: '**',
-        redirectTo: '/admin/settings'
+        path: '**',
+        pathMatch: 'full',
+        redirectTo: 'settings'
       }
     ]
   },
   {
-    pathMatch: '**',
-    redirectTo: '/admin/settings'
+    path: '**',
+    pathMatch: 'full',
+    redirectTo: 'admin/settings'
   }
 ];
 

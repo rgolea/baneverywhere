@@ -7,6 +7,8 @@ import { AdminRoutingModule } from './admin-routing.module';
 import { HeaderStatsModule } from './header-stats/header-stats.module';
 import { SidebarModule } from './sidebar/sidebar.module';
 import { AdminNavbarModule } from './admin-navbar/admin-navbar.module';
+import { NgxsModule } from '@ngxs/store';
+import { FollowsStateModule } from '../store/follows/follows-state.module';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,8 @@ import { AdminNavbarModule } from './admin-navbar/admin-navbar.module';
     AdminRoutingModule,
     HeaderStatsModule,
     SidebarModule,
-    AdminNavbarModule
+    AdminNavbarModule,
+    FollowsStateModule
   ],
   exports: [],
   providers: [],

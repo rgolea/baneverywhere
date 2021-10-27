@@ -1,27 +1,31 @@
-import { Component, AfterViewInit, ViewChild, ElementRef, OnInit } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
+import { Router } from '@angular/router';
 import { Select, Store } from '@ngxs/store';
 import { createPopper } from '@popperjs/core';
 import { Observable } from 'rxjs';
-import { AuthState, AuthStateModel } from '../../store/auth/auth.state';
+import { Logout } from '../../store/auth/auth.actions';
+import { AuthState } from '../../store/auth/auth.state';
 
 @Component({
   selector: 'baneverywhere-user-dropdown',
   templateUrl: './user-dropdown.component.html',
 })
-export class UserDropdownComponent implements OnInit, AfterViewInit {
-  @Select(AuthState) auth$: Observable<AuthStateModel>;
+export class UserDropdownComponent implements AfterViewInit {
+  @Select(AuthState.profilePicture) profilePicture$: Observable<string>;
   dropdownPopoverShow = false;
   @ViewChild('btnDropdownRef', { static: false }) btnDropdownRef: ElementRef;
   @ViewChild('popoverDropdownRef', { static: false })
   popoverDropdownRef: ElementRef;
 
   constructor(
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly router: Router
   ){}
-
-  ngOnInit(){
-    this.auth$ = this.store.select(state => state.auth);
-  }
 
   ngAfterViewInit() {
     createPopper(
@@ -39,5 +43,10 @@ export class UserDropdownComponent implements OnInit, AfterViewInit {
     } else {
       this.dropdownPopoverShow = true;
     }
+  }
+
+  logout(){
+    this.store.dispatch(new Logout());
+    this.router.navigate(['/auth']);
   }
 }

@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 // layouts
 import { AuthComponent } from './auth/auth.component';
+import { AuthGuard } from './auth/auth.guard';
 
 
 const routes: Routes = [
@@ -13,7 +14,8 @@ const routes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
+    loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
+    canActivate: [AuthGuard]
   },
   // no layout views
   { path: '**', redirectTo: 'auth', pathMatch: 'full' },

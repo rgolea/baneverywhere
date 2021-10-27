@@ -3,8 +3,7 @@ import {
   Get,
   Res,
   HttpStatus,
-  UseGuards,
-  Response,
+  UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TwitchUserProfile } from '@baneverywhere/api-interfaces';

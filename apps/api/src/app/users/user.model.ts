@@ -13,26 +13,23 @@ export type UserDocument = UserModel & Document;
 export class UserModel implements TwitchUserProfile {
   @Prop({
     required: true,
-    text: true,
     index: 'hashed'
   })
   login: string;
 
   @Prop({
-    required: true,
-    text: true,
+    required: true
   })
   display_name: string;
 
   @Prop({
     required: true,
-    text: true,
+    index: 'hashed'
   })
   twitchId: string;
 
   @Prop({
-    required: true,
-    text: true,
+    required: true
   })
   profile_image_url: string;
 }

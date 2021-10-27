@@ -6,9 +6,10 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import { Store } from '@ngxs/store';
-import { AuthStateModel } from '../store/auth/auth.state';
+import { AuthState } from '../store/auth/auth.state';
 import { filter, tap } from 'rxjs';
 import { AddJwtBearer } from '../store/auth/auth.actions';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -17,13 +18,21 @@ export class TokenInterceptor implements HttpInterceptor {
   constructor(private readonly store: Store) {}
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler) {
-    const token = this.store.selectSnapshot<string>(
-      (state: { auth: AuthStateModel }) => state.auth.jwtBearer
-    );
-    if (token) {
+    const accessToken = this.store.selectSnapshot(AuthState.accessToken);
+    const jwtToken = this.store.selectSnapshot(AuthState.jwtToken);
+
+    if (req.url.includes('twitch') && accessToken) {
       req = req.clone({
         setHeaders: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
+          'Client-Id': environment.oauth.appId,
+        },
+      });
+    } else if (!req.url.includes('twitch') && jwtToken) {
+      req = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Client-Id': environment.oauth.appId,
         },
       });
     }
