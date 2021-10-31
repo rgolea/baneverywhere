@@ -37,6 +37,11 @@ export class FollowsState {
   ) {}
 
   @Selector()
+  static cursor(state: FollowsStateModel): string{
+    return state.pagination.cursor;
+  }
+
+  @Selector()
   static total(state: FollowsStateModel) {
     return state.total;
   }
@@ -66,6 +71,7 @@ export class FollowsState {
         {
           params: {
             ...payload,
+            first: 40,
             from_id: twitchId,
           },
         }

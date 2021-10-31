@@ -1,15 +1,54 @@
 <div
-  class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0"
+  class="
+    relative
+    flex flex-col
+    min-w-0
+    break-words
+    w-full
+    mb-6
+    shadow-lg
+    rounded-lg
+    bg-blueGray-100
+    border-0
+  "
 >
   <div class="rounded-t bg-white mb-0 px-6 py-6">
     <div class="text-center flex justify-between">
-      <h6 class="text-blueGray-700 text-xl font-bold">My list of twitch follows</h6>
+      <h6 class="text-blueGray-700 text-xl font-bold">
+        My list of twitch follows
+      </h6>
     </div>
   </div>
   <div class="flex-auto px-4 lg:px-10 py-10 pt-0">
-    Mostrando {{(follows$ | async)?.length | number}} de {{ total$ | async | number }}
-    <ul>
-      <li *ngFor="let follow of follows$ | async">{{follow.display_name}}</li>
-    </ul>
+    <div class="flex flex-wrap">
+      <div
+        class="w-full md:w-6/12 lg:w-3/12 lg:mb-0 mb-12 px-4 p-1"
+        *ngFor="let follow of follows$ | async"
+      >
+        <div class="px-6">
+          <img
+            (click)="followSettings.fire()"
+            alt="..."
+            [src]="follow.profile_image_url"
+            class="shadow-lg rounded-full mx-auto max-w-120-px"
+          />
+        </div>
+      </div>
+      <button
+        *ngIf="(follows$ | async)?.length !== (total$ | async)"
+        (click)="loadMore()"
+      >
+        Load more...
+      </button>
+    </div>
   </div>
 </div>
+
+<swal
+  #followSettings
+  title="Show settings for ..."
+  text="This cannot be undone"
+  icon="question"
+  [showCancelButton]="true"
+  [focusCancel]="true">
+</swal>

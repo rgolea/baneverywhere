@@ -5,14 +5,22 @@ import { CardProfileComponent } from './card-profile/card-profile.component';
 import { SettingsComponent } from './settings.component';
 import { SettingsRoutingModule } from './settings-routing.module';
 import { NgxsModule } from '@ngxs/store';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { SettingsStateModule } from '../../store/settings/settings-state.module';
 
 @NgModule({
   declarations: [
     CardSettingsComponent,
     CardProfileComponent,
-    SettingsComponent
+    SettingsComponent,
   ],
-  imports: [ CommonModule, SettingsRoutingModule, NgxsModule ],
+  imports: [
+    CommonModule,
+    SettingsRoutingModule,
+    NgxsModule,
+    SweetAlert2Module,
+    SettingsStateModule,
+  ],
   exports: [],
   providers: [],
 })

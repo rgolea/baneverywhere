@@ -13,6 +13,7 @@ import { environment } from '../environments/environment';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { StoreModule } from './store/store.module';
 import { TokenInterceptor } from './interceptors/token.interceptor';
+import { SweetAlert2Module } from "@sweetalert2/ngx-sweetalert2";
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
     }),
     NgxsReduxDevtoolsPluginModule.forRoot(),
     StoreModule,
+    SweetAlert2Module.forRoot()
   ],
   providers: [
     {
