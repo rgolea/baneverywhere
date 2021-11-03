@@ -24,10 +24,10 @@ export class AuthController {
     @TwitchProfile() profile: TwitchUserProfile,
     @Res() res
   ): Promise<void> {
-    const { _id, twitchId, login } = (
+    const { _id, twitchId } = (
       await this.usersService.createOrUpdateUser(profile)
     ).toJSON();
-    const token = this.jwtService.sign({ _id, twitchId, login });
+    const token = this.jwtService.sign({ _id, twitchId });
     res.setHeader('X-Access-Token', token);
     res.setHeader('Access-Control-Expose-Headers', 'X-Access-Token');
     res.json({

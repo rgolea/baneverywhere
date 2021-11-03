@@ -27,7 +27,7 @@
       >
         <div class="px-6">
           <img
-            (click)="followSettings.fire()"
+            (click)="loadSettingsForUser(follow.twitchId)"
             alt="..."
             [src]="follow.profile_image_url"
             class="shadow-lg rounded-full mx-auto max-w-120-px"
@@ -46,9 +46,32 @@
 
 <swal
   #followSettings
-  title="Show settings for ..."
-  text="This cannot be undone"
-  icon="question"
+  icon="info"
   [showCancelButton]="true"
-  [focusCancel]="true">
+  [focusConfirm]="true"
+  [focusCancel]="false"
+  (didClose)="resetSettingsStore()"
+  (confirm)="saveSettings(selectedSettings)"
+  [focusCancel]="true"
+>
+  <pre *swalPortal>
+    <div
+        class="w-full md:w-6/12 lg:w-3/12 lg:mb-0 mb-12 px-4 p-1"
+        *ngIf="(profile$ | async); let profile"
+      >
+        <div class="px-6">
+          <img
+            alt="..."
+            [src]="profile.profile_image_url"
+            class="shadow-lg rounded-full mx-auto max-w-120-px"
+          />
+        </div>
+        {{ profile.display_name }}
+        <form>
+          <select [formControl]="selectedSettings">
+            <option *ngFor="let obj of settingsOptions | keyvalue" [value]="obj.value">{{obj.key}}</option>
+          </select>
+        </form>
+      </div>
+  </pre>
 </swal>

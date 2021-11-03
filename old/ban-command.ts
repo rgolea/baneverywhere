@@ -7,7 +7,10 @@ export class BanCommand extends CommandExecutor {
     const [ user, ...reasonArr ] = args;
     const channels = client.getChannels();
     const reason = reasonArr.filter(Boolean).join(' ');
-    if(!reason?.length) return client.say(channel, `Please give a reason`);
+    if(!reason?.length) {
+      client.say(channel, `Please give a reason`);
+      return;
+    }
     try {
       await Promise.all(channels.map(async (ch: string) => {
         return await client.ban(ch, user, `${reasonArr.join(' ')}`);

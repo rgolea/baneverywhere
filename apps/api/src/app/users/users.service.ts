@@ -21,4 +21,10 @@ export class UsersService {
       new: true
     });
   }
+
+  async findOneByTwitchId(twitchId: string): Promise<UserDocument> {
+    return await this.userModel.findOne({
+      twitchId
+    });
+  }
 }

@@ -26,8 +26,14 @@ export interface TwitchListResponse<T> {
   data: Array<T>;
 }
 
-export enum BanEverywhereSetting {
+export enum BanEverywhereSettings {
   AUTOMATIC = 'automatic',
   WITH_VALIDATION = 'with_validation',
   NONE = 'none'
+}
+
+export interface TwitchUserSettings {
+  fromId: string;
+  toId: string;
+  settings: BanEverywhereSettings;
 }

@@ -5,7 +5,7 @@ import {
   TwitchListResponse,
   TwitchUserProfile,
 } from '@baneverywhere/api-interfaces';
-import { Action, Selector, State, StateContext, Store } from '@ngxs/store';
+import { Action, createSelector, Selector, State, StateContext, Store } from '@ngxs/store';
 import { map, switchMap, tap } from 'rxjs';
 import { AuthState } from '../auth/auth.state';
 import { LoadFollows, LoadMoreFollows } from './follows.actions';
@@ -36,6 +36,12 @@ export class FollowsState {
     private readonly store: Store
   ) {}
 
+  static followById(id: string){
+    return createSelector([FollowsState.follows], (follows: TwitchUserProfile[]) => {
+      return follows.find((user) => user.twitchId === id);
+    });
+  }
+
   @Selector()
   static cursor(state: FollowsStateModel): string{
     return state.pagination.cursor;
@@ -54,9 +60,6 @@ export class FollowsState {
   @Action(LoadFollows)
   loadFollows() {
     this.store.dispatch(new LoadMoreFollows());
-    // this.http.get('https://api.twitch.tv/helix/users/follows', {
-
-    // })
   }
 
   @Action(LoadMoreFollows)

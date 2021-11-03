@@ -4,6 +4,7 @@ import { TwitchStrategy } from './strategies/twitch.strategy';
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ConfigModule } from '@nestjs/config';
       property: 'user',
       defaultStrategy: 'jwt'
     }),
+    UsersModule
   ],
   providers: [JwtStrategy, TwitchStrategy],
   exports: [PassportModule, JwtModule]

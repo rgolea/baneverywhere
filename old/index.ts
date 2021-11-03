@@ -12,7 +12,7 @@ const client = new Client({
 		username: process.env.BAN_BOT_USER,
 		password: process.env.BAN_BOT_PASSWORD //OBTAIN PASSWORD: http://twitchapps.com/tmi/
 	},
-	channels: [ 'rgolea' ]
+	channels: [ 'rgolea', 'Rakyzax', 'UraikuTheLostWolf', 'Rhimaa' ]
 });
 
 client.connect().then(() => {

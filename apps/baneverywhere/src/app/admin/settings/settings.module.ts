@@ -7,6 +7,7 @@ import { SettingsRoutingModule } from './settings-routing.module';
 import { NgxsModule } from '@ngxs/store';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { SettingsStateModule } from '../../store/settings/settings-state.module';
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -20,6 +21,8 @@ import { SettingsStateModule } from '../../store/settings/settings-state.module'
     NgxsModule,
     SweetAlert2Module,
     SettingsStateModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   exports: [],
   providers: [],
