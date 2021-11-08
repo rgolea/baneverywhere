@@ -7,7 +7,7 @@ import {
   LoadMoreFollows,
 } from '../../../store/follows/follows.actions';
 import { FollowsState } from '../../../store/follows/follows.state';
-import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
+import { SwalComponent, SwalPortalTargets } from '@sweetalert2/ngx-sweetalert2';
 import { LoadSettingsForUser, SaveSettings, UnloadSettings } from '../../../store/settings/settings.actions';
 import { SettingsState } from '../../../store/settings/settings.state';
 import { FormControl } from '@angular/forms';
@@ -29,7 +29,7 @@ export class CardSettingsComponent implements OnInit {
   public settingsOptions = BanEverywhereSettings;
   private subscriptions: Subscription[] = [];
 
-  constructor(private readonly store: Store) {}
+  constructor(private readonly store: Store, public readonly swalTargets: SwalPortalTargets) {}
 
   ngOnInit() {
     this.store.dispatch(new LoadFollows());

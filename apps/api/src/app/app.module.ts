@@ -8,15 +8,15 @@ import { SettingsModule } from './settings/settings.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     AuthModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: mongooseConfigFactory,
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
     SettingsModule
-  ]
+  ],
 })
 export class AppModule {}

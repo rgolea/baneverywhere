@@ -3,19 +3,24 @@ import {
   Get,
   Res,
   HttpStatus,
-  UseGuards
+  UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TwitchUserProfile } from '@baneverywhere/api-interfaces';
 import { TwitchProfile } from '../core/strategies/twitch-profile';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { BOT_HANDLER } from '../microservices';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    @Inject(BOT_HANDLER) private client: ClientProxy
   ) {}
 
   @Get('/twitch')
