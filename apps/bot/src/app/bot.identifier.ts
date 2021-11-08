@@ -1,0 +1,1 @@
+export const BOT_IDENTIFIER = 'BOT_IDENTIFIER';

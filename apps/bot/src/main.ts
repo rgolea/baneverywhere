@@ -4,17 +4,22 @@
  */
 
 import { Logger } from '@nestjs/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: false
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    transport: Transport.REDIS,
+    options: {
+      url: 'redis://localhost:6379',
+    }
   });
-  await app.listen(0, async () => {
-    Logger.log(`Listening at ${await app.getUrl()}`);
-  });
+
+  app.enableShutdownHooks();
+
+  app.listen().then(() => Logger.log('Microservice is listening'));
 }
 
 bootstrap();

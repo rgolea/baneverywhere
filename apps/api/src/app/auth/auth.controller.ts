@@ -11,9 +11,8 @@ import { TwitchUserProfile } from '@baneverywhere/api-interfaces';
 import { TwitchProfile } from '../core/strategies/twitch-profile';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { BOT_HANDLER } from '../microservices';
+import { BOT_HANDLER } from '@baneverywhere/namespaces';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
 
 @Controller('auth')
 export class AuthController {

@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@baneverywhere/api-interfaces": ["libs/api-interfaces/src/index.ts"]
+      "@baneverywhere/api-interfaces": ["libs/api-interfaces/src/index.ts"],
+      "@baneverywhere/namespaces": ["libs/namespaces/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

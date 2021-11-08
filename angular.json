@@ -295,6 +295,29 @@
         }
       },
       "tags": []
+    },
+    "namespaces": {
+      "root": "libs/namespaces",
+      "sourceRoot": "libs/namespaces/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/namespaces/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/namespaces"],
+          "options": {
+            "jestConfig": "libs/namespaces/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "tags": []
     }
   }
 }

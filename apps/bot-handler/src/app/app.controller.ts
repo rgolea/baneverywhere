@@ -1,12 +1,17 @@
 import { Controller } from '@nestjs/common';
-// import { MessagePattern } from '@nestjs/microservices';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller()
 export class AppController {
-  constructor(@InjectQueue('bot') private readonly botQueue: Queue) {
-    this.botQueue.add('ban', {twitchId: 'someId'}).then((job) => console.log(job.id));
+
+  @MessagePattern('bot.identifier.created')
+  botIdentifierCreated(id: string) {
+    console.log('bot.identifier.created', id);
+  }
+
+  @MessagePattern('bot.identifier.destroyed')
+  botIdentifierDestroyed(id: string) {
+    console.log('bot.identifier.destroyed', id);
   }
   // @MessagePattern('user.online')
   // userOnline(twitchId: string) {}
