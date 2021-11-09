@@ -41,6 +41,7 @@
     "@byteowls/capacitor-oauth2": "^3.0.1",
     "@capacitor/core": "^3.2.5",
     "@fortawesome/fontawesome-free": "^5.15.4",
+    "@nestjs/axios": "^0.0.3",
     "@nestjs/bull": "^0.4.2",
     "@nestjs/common": "8.1.1",
     "@nestjs/config": "^1.0.2",

@@ -18,10 +18,17 @@ import { environment } from '../environments/environment';
         options: { url: 'redis://localhost:6379' },
       },
     ]),
-    BotClientModule.forRoot({
-      debug: !environment.production,
-      username: process.env.BAN_BOT_USER,
-      password: process.env.BAN_BOT_PASSWORD,
+    BotClientModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          debug: !environment.production,
+          username: configService.get('BOT_USERNAME'),
+          clientId: configService.get('TWITCH_CLIENT_ID'),
+          clientSecret: configService.get('TWITCH_CLIENT_SECRET')
+        };
+      },
+      imports: [ConfigModule]
     })
   ],
   providers: [
