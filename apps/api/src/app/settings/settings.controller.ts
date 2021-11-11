@@ -1,5 +1,4 @@
 import {
-  BanEverywhereSettings,
   StatusResponse,
   TwitchUserProfile,
   TwitchUserSettings,
@@ -16,11 +15,12 @@ export class SettingsController {
   @Get(':id')
   async getSettings(
     @Param('id') fromId: string,
-    @TwitchProfile() { twitchId: toId }: TwitchUserProfile
+    @TwitchProfile() { twitchId: toId, login: toUsername }: TwitchUserProfile
   ): Promise<StatusResponse<TwitchUserSettings>> {
     const settings = await this.settingsService.findOneOrCreateSettings({
       fromId,
       toId,
+      toUsername
     });
     return {
       statusCode: HttpStatus.OK,
@@ -35,13 +35,14 @@ export class SettingsController {
   @Put(':id')
   async updateSettings(
     @Param('id') fromId: string,
-    @TwitchProfile() { twitchId: toId }: TwitchUserProfile,
+    @TwitchProfile() { twitchId: toId, login: toUsername }: TwitchUserProfile,
     @Body() { settings }: TwitchUserSettings
   ): Promise<StatusResponse<TwitchUserSettings>>{
     const res =  await this.settingsService.createOrUpdateSettings({
       fromId,
       toId,
-      settings
+      settings,
+      toUsername
     });
     return {
       statusCode: HttpStatus.OK,

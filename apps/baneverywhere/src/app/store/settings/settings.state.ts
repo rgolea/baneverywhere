@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  BanEverywhereSettings,
   StatusResponse,
   TwitchUserSettings,
 } from '@baneverywhere/api-interfaces';
+import { BanEverywhereSettings } from "@prisma/client";
 import { Action, createSelector, Selector, State, StateContext } from '@ngxs/store';
 import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';

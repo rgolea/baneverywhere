@@ -1,30 +1,30 @@
 import { Global, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { UserDocument, UserModel } from './user.model';
-import { Model } from 'mongoose';
 import { TwitchUserProfile } from "@baneverywhere/api-interfaces";
+import { BotDatabaseService } from "@baneverywhere/db";
+import { User } from "@prisma/client";
 
 @Global()
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(UserModel.name) private readonly userModel: Model<UserDocument>
+    private readonly dbService: BotDatabaseService
   ){}
 
-  async createOrUpdateUser(profile: TwitchUserProfile): Promise<UserDocument> {
-    return await this.userModel.findOneAndUpdate({
-      twitchId: profile.twitchId
-    }, {
-      ...profile
-    }, {
-      upsert: true,
-      new: true
+  async createOrUpdateUser(profile: TwitchUserProfile): Promise<User> {
+    return await this.dbService.user.upsert({
+      where: {
+        twitchId: profile.twitchId
+      },
+      create: profile,
+      update: profile
     });
   }
 
-  async findOneByTwitchId(twitchId: string): Promise<UserDocument> {
-    return await this.userModel.findOne({
-      twitchId
+  async findOneByTwitchId(twitchId: string): Promise<User> {
+    return await this.dbService.user.findFirst({
+      where: {
+        twitchId
+      }
     });
   }
 }

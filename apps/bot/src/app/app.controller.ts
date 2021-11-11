@@ -16,6 +16,7 @@ import {
   respondLater,
   BotPatterns,
 } from '@baneverywhere/bot-interfaces';
+import { Actions } from '@prisma/client';
 
 @Controller('app')
 export class AppController {
@@ -60,5 +61,25 @@ export class AppController {
       status: this.botClientService.getStatus(),
       identifier: this.botIdentifier,
     };
+  }
+
+  @EventPattern(BotPatterns.BOT_BAN_USER)
+  banUser(action: Actions) {
+    const status = this.botClientService.getStatus();
+    if(status.users.find(user => action.queueFor === user)){
+      return this.botClientService.banUser(action.queueFor, action);
+    } else {
+      return respondLater();
+    }
+  }
+
+  @EventPattern(BotPatterns.BOT_UNBAN_USER)
+  unbanUser(action: Actions) {
+    const status = this.botClientService.getStatus();
+    if(status.users.find(user => action.queueFor === user)){
+      return this.botClientService.unbanUser(action.queueFor, action);
+    } else {
+      return respondLater();
+    }
   }
 }

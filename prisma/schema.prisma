@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model User {
+  @@map("users")
+  id    String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  login String @unique
+  display_name String @unique
+  twitchId String @unique
+  profile_image_url String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum BanEverywhereSettings {
+  AUTOMATIC
+  WITH_VALIDATION
+  NONE
+}
+
+model Settings {
+  @@map("settings")
+  id    String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  fromId String
+  fromUsername String
+  toId String
+  toUsername String
+  settings BanEverywhereSettings @default(NONE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([fromId, toId])
+  @@unique([fromUsername, toUsername])
+}
+
+enum Action {
+  BAN
+  UNBAN
+}
+
+model Actions {
+  @@map("actions")
+  id    String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  action Action
+  user String
+  streamer String
+  moderator String
+  reason String?
+  queueFor String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

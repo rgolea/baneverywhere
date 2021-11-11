@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BanEverywhereSettings, TwitchUserProfile } from '@baneverywhere/api-interfaces';
+import { TwitchUserProfile } from '@baneverywhere/api-interfaces';
+import { BanEverywhereSettings } from "@prisma/client";
 import { Select, Store } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import {

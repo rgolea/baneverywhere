@@ -17,7 +17,9 @@
     "paths": {
       "@baneverywhere/api-interfaces": ["libs/api-interfaces/src/index.ts"],
       "@baneverywhere/bot-interfaces": ["libs/bot-interfaces/src/index.ts"],
-      "@baneverywhere/namespaces": ["libs/namespaces/src/index.ts"]
+      "@baneverywhere/db": ["libs/db/src/index.ts"],
+      "@baneverywhere/namespaces": ["libs/namespaces/src/index.ts"],
+      "@baneverywhere/twitch-client": ["libs/twitch-client/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

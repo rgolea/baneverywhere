@@ -1,4 +1,4 @@
-import { BanEverywhereSettings } from "@baneverywhere/api-interfaces";
+import { BanEverywhereSettings } from "@prisma/client";
 
 export class LoadSettingsForUser {
   static readonly type = '[Settings] Load Settings For User';

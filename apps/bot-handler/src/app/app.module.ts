@@ -2,7 +2,6 @@ import { Inject, Module, OnApplicationBootstrap } from '@nestjs/common';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BullModule } from '@nestjs/bull';
 import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { BOT_CONNECTION } from '@baneverywhere/namespaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -12,13 +11,6 @@ import { BotPatterns } from '@baneverywhere/bot-interfaces';
 @Module({
   imports: [
     ConfigModule,
-    BullModule.registerQueue({
-      name: 'bot',
-      redis: {
-        host: 'localhost',
-        port: 6379,
-      },
-    }),
     ClientsModule.register([
       {
         name: BOT_CONNECTION,

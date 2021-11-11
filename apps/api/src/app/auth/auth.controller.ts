@@ -28,68 +28,13 @@ export class AuthController {
     @TwitchProfile() profile: TwitchUserProfile,
     @Res() res
   ): Promise<void> {
-    const { _id, twitchId } = (
+    const { id, twitchId } = (
       await this.usersService.createOrUpdateUser(profile)
-    ).toJSON();
-    const token = this.jwtService.sign({ _id, twitchId });
+    );
+    const token = this.jwtService.sign({ id, twitchId });
+    this.botHandlerClient.emit('user.online', profile.login);
     res.setHeader('X-Access-Token', token);
     res.setHeader('Access-Control-Expose-Headers', 'X-Access-Token');
-    [
-      'ibai',
-      'rubius',
-      'juansguarnizo',
-      'illojuan',
-      'montanablack88',
-      'sodapoppin',
-      'rainbow6',
-      'scump',
-      'hasanabi',
-      'loltyler1',
-      'castro_1021',
-      'arteezy',
-      'jackmanifoldtv',
-      'trainwreckstv',
-      'roshtein',
-      'esl_csgo',
-      'nickmercs',
-      'lirik',
-      'philza',
-      'kkatamina',
-      'northernlion',
-      'forsen',
-      'quin69',
-      'kyle',
-      'buddha',
-      'shivfps',
-      'doublelift',
-      'veibae',
-      'redbyrd',
-      'followgrubby',
-      'alinity',
-      'marinemammalrescue',
-      'TheGrefg',
-      'wankilstudio',
-      'twitchsports',
-      '!!tztimmy',
-      'real_bazzi',
-      'daltoosh',
-      'jinnytty',
-      'supertf',
-      'imaqtpie',
-      'folagorlives',
-      'diegosaurs',
-      'primeleague',
-      'mithrain',
-      'xchocobars',
-      'becca',
-      'uccstudio',
-      'harry',
-      'mrsoki',
-      'zok3r',
-      'rgolea'
-    ].forEach((channel) => {
-      this.botHandlerClient.emit('user.online', channel);
-    });
     res.json({
       statusCode: HttpStatus.OK,
       data: profile,

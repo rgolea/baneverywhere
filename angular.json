@@ -91,7 +91,8 @@
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "allowedCommonJsDependencies": ["@prisma/client"]
           },
           "configurations": {
             "production": {
@@ -319,6 +320,29 @@
       },
       "tags": []
     },
+    "db": {
+      "root": "libs/db",
+      "sourceRoot": "libs/db/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/db/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/db"],
+          "options": {
+            "jestConfig": "libs/db/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "tags": []
+    },
     "namespaces": {
       "root": "libs/namespaces",
       "sourceRoot": "libs/namespaces/src",
@@ -336,6 +360,81 @@
           "outputs": ["coverage/libs/namespaces"],
           "options": {
             "jestConfig": "libs/namespaces/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "tags": []
+    },
+    "queue-processor": {
+      "root": "apps/queue-processor",
+      "sourceRoot": "apps/queue-processor/src",
+      "projectType": "application",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/queue-processor",
+            "main": "apps/queue-processor/src/main.ts",
+            "tsConfig": "apps/queue-processor/tsconfig.app.json",
+            "assets": ["apps/queue-processor/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/queue-processor/src/environments/environment.ts",
+                  "with": "apps/queue-processor/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "queue-processor:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/queue-processor/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/queue-processor"],
+          "options": {
+            "jestConfig": "apps/queue-processor/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "tags": []
+    },
+    "twitch-client": {
+      "root": "libs/twitch-client",
+      "sourceRoot": "libs/twitch-client/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/twitch-client/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/twitch-client"],
+          "options": {
+            "jestConfig": "libs/twitch-client/jest.config.js",
             "passWithNoTests": true
           }
         }

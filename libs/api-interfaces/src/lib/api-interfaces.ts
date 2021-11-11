@@ -1,3 +1,4 @@
+import { BanEverywhereSettings } from "@prisma/client";
 export interface TwitchUserProfile {
   twitchId: string;
   login: string;
@@ -24,12 +25,6 @@ export interface TwitchListResponse<T> {
   };
   total: number;
   data: Array<T>;
-}
-
-export enum BanEverywhereSettings {
-  AUTOMATIC = 'automatic',
-  WITH_VALIDATION = 'with_validation',
-  NONE = 'none'
 }
 
 export interface TwitchUserSettings {

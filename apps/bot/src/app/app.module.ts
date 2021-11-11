@@ -4,9 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { BOT_HANDLER_CONNECTION } from '@baneverywhere/namespaces';
 import { AppController } from './app.controller';
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { BotClientModule } from "./bot-client/bot-client.module";
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { BotClientModule } from './bot-client/bot-client.module';
 import { environment } from '../environments/environment';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -23,13 +24,25 @@ import { environment } from '../environments/environment';
       useFactory: (configService: ConfigService) => {
         return {
           debug: !environment.production,
-          username: configService.get('BOT_USERNAME'),
-          clientId: configService.get('TWITCH_CLIENT_ID'),
-          clientSecret: configService.get('TWITCH_CLIENT_SECRET')
+          username: configService.get('BAN_BOT_USER'),
+          accessToken: configService.get('TWITCH_CLIENT_ACCESS_TOKEN'),
         };
       },
-      imports: [ConfigModule]
-    })
+      imports: [
+        ConfigModule,
+        BullModule.registerQueueAsync({
+          name: 'queue',
+          useFactory: (config: ConfigService) => ({
+            redis: {
+              host: config.get('REDIS_HOST', 'localhost'),
+              port: config.get('REDIS_PORT', 6379),
+            },
+          }),
+          imports: [ConfigModule],
+          inject: [ConfigService],
+        }),
+      ],
+    }),
   ],
   providers: [
     {
@@ -42,9 +55,8 @@ import { environment } from '../environments/environment';
 export class AppModule implements OnModuleInit, OnModuleDestroy {
   constructor(
     @Inject(BOT_IDENTIFIER) private readonly botIdentifier: string,
-    private readonly configService: ConfigService,
     @Inject(BOT_HANDLER_CONNECTION)
-    private readonly botHandlerClient: ClientProxy,
+    private readonly botHandlerClient: ClientProxy
   ) {}
 
   onModuleInit() {

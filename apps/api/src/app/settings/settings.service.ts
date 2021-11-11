@@ -1,41 +1,65 @@
-import {
-  BanEverywhereSettings,
-  TwitchUserSettings,
-} from '@baneverywhere/api-interfaces';
+import { TwitchUserSettings } from '@baneverywhere/api-interfaces';
+import { BotDatabaseService } from '@baneverywhere/db';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { SettingsDocument, SettingsModel } from './settings.model';
 import { Omit } from 'utility-types';
+import { Settings, BanEverywhereSettings } from '@prisma/client';
+import { TwitchClientService } from "@baneverywhere/twitch-client";
 
 @Injectable()
 export class SettingsService {
   constructor(
-    @InjectModel(SettingsModel.name)
-    private readonly settingsModel: Model<SettingsDocument>
+    private readonly dbService: BotDatabaseService,
+    private readonly twitchClientService: TwitchClientService,
   ) {}
 
   async findOneOrCreateSettings({
     fromId,
     toId,
-  }: Omit<TwitchUserSettings, 'settings'>): Promise<SettingsDocument> {
-    let settings = await this.settingsModel.findOne({ fromId, toId });
+    toUsername,
+  }: Omit<TwitchUserSettings, 'settings'> & {
+    toUsername: string;
+  }): Promise<Settings> {
+    let settings = await this.dbService.settings.findUnique({
+      where: {
+        fromId_toId: {
+          fromId,
+          toId,
+        },
+      },
+    });
     if (settings) return settings;
-    settings = await this.settingsModel.create({
-      fromId,
-      toId,
-      settings: BanEverywhereSettings.NONE,
+    const fromUsername = await this.twitchClientService.findUsername(fromId);
+    settings = await this.dbService.settings.create({
+      data: {
+        fromId,
+        fromUsername,
+        toUsername,
+        toId,
+        settings: BanEverywhereSettings.NONE,
+      },
     });
     return settings;
   }
 
-  async createOrUpdateSettings(
-    config: TwitchUserSettings
-  ): Promise<SettingsDocument> {
-    return await this.settingsModel.findOneAndUpdate(
-      { fromId: config.fromId, toId: config.toId },
-      { settings: config.settings },
-      { upsert: true, new: true }
-    );
+  async createOrUpdateSettings(config: TwitchUserSettings & { toUsername: string }): Promise<Settings> {
+    const fromUsername = await this.twitchClientService.findUsername(config.fromId);
+    return await this.dbService.settings.upsert({
+      where: {
+        fromId_toId: {
+          fromId: config.fromId,
+          toId: config.toId,
+        },
+      },
+      create: {
+        ...config,
+        fromUsername,
+        settings: BanEverywhereSettings.NONE,
+      },
+      update: {
+        settings: config.settings
+      },
+    });
   }
+
+
 }

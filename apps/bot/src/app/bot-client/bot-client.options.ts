@@ -3,8 +3,7 @@ import { FactoryProvider, ModuleMetadata } from '@nestjs/common';
 export interface BotClientOptions {
   debug?: boolean;
   username: string;
-  clientId: string;
-  clientSecret: string;
+  accessToken: string;
   twitchOAuthURL?: string;
 }
 
