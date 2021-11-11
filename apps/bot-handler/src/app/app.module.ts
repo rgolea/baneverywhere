@@ -2,11 +2,12 @@ import { Inject, Module, OnApplicationBootstrap } from '@nestjs/common';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BullModule } from "@nestjs/bull";
+import { BullModule } from '@nestjs/bull';
 import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
-import { BOT_CONNECTION } from "@baneverywhere/namespaces";
-import { v4 as uuidv4 } from "uuid";
+import { BOT_CONNECTION } from '@baneverywhere/namespaces';
+import { v4 as uuidv4 } from 'uuid';
 import { ConfigModule } from '@nestjs/config';
+import { BotPatterns } from '@baneverywhere/bot-interfaces';
 
 @Module({
   imports: [
@@ -31,13 +32,15 @@ import { ConfigModule } from '@nestjs/config';
 })
 export class AppModule implements OnApplicationBootstrap {
   constructor(
-    @Inject(BOT_CONNECTION) private readonly botHandlerClient: ClientProxy,
-  ) {
-  }
+    @Inject(BOT_CONNECTION) private readonly botHandlerClient: ClientProxy
+  ) {}
 
   onApplicationBootstrap() {
     setTimeout(() => {
-      this.botHandlerClient.emit('bot:get:status', { status: 'online', id: uuidv4() });
+      this.botHandlerClient.emit<void, unknown>(
+        BotPatterns.BOT_GET_STATUS,
+        uuidv4()
+      );
     }, 1000);
   }
 }

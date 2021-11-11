@@ -1,9 +1,21 @@
 import { Controller, Inject } from '@nestjs/common';
-import { ClientProxy, MessagePattern } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  EventPattern,
+  MessagePattern,
+} from '@nestjs/microservices';
 import { BotClientService } from './bot-client/bot-client.service';
 import { BOT_IDENTIFIER } from './bot.identifier';
 import { BOT_HANDLER_CONNECTION } from '@baneverywhere/namespaces';
-import { interval, skip, take } from 'rxjs';
+import {
+  BotConnectChannelParams,
+  BotConnectChannelResponse,
+  BotDisconnectChannelParams,
+  BotGetStatusResponse,
+  Never,
+  respondLater,
+  BotPatterns,
+} from '@baneverywhere/bot-interfaces';
 
 @Controller('app')
 export class AppController {
@@ -14,39 +26,39 @@ export class AppController {
     private readonly botHandlerConnection: ClientProxy
   ) {}
 
-  @MessagePattern('bot:get:status')
-  getStatus({ id }: { id: string }) {
-    this.botHandlerConnection.emit('bot:status', {
-      id,
-      identifier: this.botIdentifier,
-      count: this.botClientService.getStatus(),
-    });
+  @EventPattern(BotPatterns.BOT_GET_STATUS)
+  getStatus() {
+    this.botHandlerConnection.emit<void, BotGetStatusResponse>(
+      BotPatterns.BOT_STATUS_RESPONSE,
+      {
+        identifier: this.botIdentifier,
+        status: this.botClientService.getStatus(),
+      }
+    );
   }
 
-  @MessagePattern('bot:connect:channel')
-  async connectToChannel({
+  @MessagePattern(BotPatterns.BOT_CONNECT_CHANNEL)
+  connectToChannel({
     channelName,
     botId,
-  }: {
-    channelName: string;
-    botId: string;
-  }) {
+  }: BotConnectChannelParams): Promise<BotConnectChannelResponse> | Never {
     if (botId === this.botIdentifier) {
-      this.botClientService.joinChannel(channelName);
-      return {
-        count: this.botClientService.getStatus(),
-      };
+      return this.botClientService.joinChannel(channelName).then((status) => ({
+        status,
+      }));
     } else {
-      return interval(10000).pipe(skip(1), take(1));
+      return respondLater();
     }
   }
 
   @MessagePattern('bot:disconnect:channel')
-  disconnectFromChannel({ channelName }: { channelName: string }) {
+  disconnectFromChannel({
+    channelName,
+  }: BotDisconnectChannelParams): BotGetStatusResponse {
     this.botClientService.leaveChannel(channelName);
     return {
-      count: this.botClientService.getStatus(),
-      identifier: this.botIdentifier
-    }
+      status: this.botClientService.getStatus(),
+      identifier: this.botIdentifier,
+    };
   }
 }

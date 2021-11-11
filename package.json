@@ -60,6 +60,7 @@
     "@tailwindcss/forms": "^0.3.4",
     "bull": "^3.29.3",
     "chart.js": "^3.5.1",
+    "lodash": "^4.17.21",
     "mongoose": "^6.0.12",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",

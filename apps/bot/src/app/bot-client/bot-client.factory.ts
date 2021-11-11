@@ -20,6 +20,8 @@ export async function botClientFactory(
   const client = new Client({
     options: {
       debug: opts.debug,
+      skipMembership: true,
+      skipUpdatingEmotesets: true
     },
     identity: {
       username: opts.username,

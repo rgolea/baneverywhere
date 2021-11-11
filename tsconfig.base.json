@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@baneverywhere/api-interfaces": ["libs/api-interfaces/src/index.ts"],
+      "@baneverywhere/bot-interfaces": ["libs/bot-interfaces/src/index.ts"],
       "@baneverywhere/namespaces": ["libs/namespaces/src/index.ts"]
     }
   },

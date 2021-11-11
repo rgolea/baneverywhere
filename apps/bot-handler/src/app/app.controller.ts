@@ -1,9 +1,17 @@
 import { BOT_CONNECTION } from '@baneverywhere/namespaces';
 import { Controller, Inject } from '@nestjs/common';
-import { ClientProxy, MessagePattern } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  EventPattern,
+  MessagePattern,
+} from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { AppService } from './app.service';
-import { v4 as uuidv4 } from "uuid";
+import {
+  BotConnectChannelResponse,
+  BotGetStatusResponse,
+  BotPatterns,
+} from '@baneverywhere/bot-interfaces';
 
 @Controller()
 export class AppController {
@@ -14,7 +22,10 @@ export class AppController {
 
   @MessagePattern('bot.identifier.created')
   botIdentifierCreated(id: string) {
-    this.appService.setOrUpdateMachineStatus(id, 0);
+    this.appService.setOrUpdateMachineStatus(id, {
+      count: 0,
+      users: [],
+    });
   }
 
   @MessagePattern('bot.identifier.destroyed')
@@ -22,19 +33,23 @@ export class AppController {
     this.appService.removeMachineStatus(id);
   }
 
-  @MessagePattern('bot:status')
-  botStatus({ identifier, count }: { identifier: string; count: number }) {
-    this.appService.setOrUpdateMachineStatus(identifier, count);
+  @MessagePattern(BotPatterns.BOT_STATUS_RESPONSE)
+  botStatus({ identifier, status }: BotGetStatusResponse) {
+    this.appService.setOrUpdateMachineStatus(identifier, status);
   }
 
-  @MessagePattern('user.online')
+  @EventPattern('user.online')
   async userOnline(channelName: string) {
-    const [ botId ] = this.appService.getMachineWithLowerStatus();
-    const { count }: { count: number } = await lastValueFrom(
-      this.botHandlerClient.send('bot:connect:channel', { channelName, botId })
+    const botId =
+      this.appService.preassignMachineToUser(channelName);
+    if (!botId) return 'NOT_JOINED';
+    const { status } = await lastValueFrom(
+      this.botHandlerClient.send<BotConnectChannelResponse>(
+        BotPatterns.BOT_CONNECT_CHANNEL,
+        { channelName, botId }
+      )
     );
-    this.appService.setOrUpdateMachineStatus(botId, count);
-    this.botHandlerClient.emit('bot:get:status', { status: 'online', id: uuidv4() });
+    this.appService.setOrUpdateMachineStatus(botId, status);
     return 'OK';
   }
 

@@ -296,6 +296,29 @@
       },
       "tags": []
     },
+    "bot-interfaces": {
+      "root": "libs/bot-interfaces",
+      "sourceRoot": "libs/bot-interfaces/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/bot-interfaces/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/bot-interfaces"],
+          "options": {
+            "jestConfig": "libs/bot-interfaces/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "tags": []
+    },
     "namespaces": {
       "root": "libs/namespaces",
       "sourceRoot": "libs/namespaces/src",
