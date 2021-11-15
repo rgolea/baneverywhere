@@ -11,6 +11,5 @@ export async function twitchClientAccessTokenFactory (http: HttpService, { clien
       }&grant_type=client_credentials`
     )
   );
-  console.log(data.access_token);
   return data.access_token;
 }

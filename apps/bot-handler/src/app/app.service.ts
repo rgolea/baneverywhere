@@ -1,36 +1,40 @@
 import { BotStatus } from '@baneverywhere/bot-interfaces';
+import { BotDatabaseService } from '@baneverywhere/db';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly dbService: BotDatabaseService
+  ) {}
 
   private readonly machineStatus = new Map<string, BotStatus>();
   private readonly userByMachine = new Map<string, string>();
 
-  setOrUpdateMachineStatus(id: string, status: BotStatus) {
-    const oldStatus = this.machineStatus.get(id);
-    if(oldStatus) {
-      oldStatus.users?.forEach(user => {
-        this.userByMachine.delete(user);
-      });
-    }
+  async setOrUpdateMachineStatus(id: string, status: BotStatus) {
+    await this.removeMachineStatus(id);
     this.machineStatus.set(id, status);
-    status?.users?.forEach(user => {
-      this.userByMachine.set(user, id);
+    if(!status.count) return;
+    await this.dbService.channels.createMany({
+      data: status.users.map(user => ({
+        machine: id,
+        username: user,
+      }))
     });
   }
 
-  removeMachineStatus(id: string){
-    const status: BotStatus = this.machineStatus.get(id);
+  async removeMachineStatus(id: string){
     this.machineStatus.delete(id);
-    status?.users?.forEach(user => {
-      this.userByMachine.delete(user);
+    await this.dbService.channels.deleteMany({
+      where: {
+        machine: id
+      }
     });
   }
 
-  preassignMachineToUser(user: string): string {
+  async preassignMachineToUser(user: string): Promise<string> {
     const MAX_USERS_PER_BOT =
       parseInt(this.configService.get<string>('MAX_USERS_PER_BOT')) || 1000;
 
@@ -38,7 +42,7 @@ export class AppService {
     if (alreadyAssigned) return;
     const machine = [...this.machineStatus]
       .filter((state) => state[1].count < MAX_USERS_PER_BOT)
-      .reduce((a, b) => (a[1].count < b[1].count ? a : b));
+      .reduce((a, b) => (a[1]?.count < b[1]?.count ? a : b), []);
 
     const id = machine[0];
     if(!id) return;

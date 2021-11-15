@@ -15,16 +15,18 @@ export class BanCommand extends CommandExecutor {
     if (!author.mod && author.username !== channelToUsername(channel, ''))
       return;
     const [user, ...reasonArr] = args;
+    if (!reasonArr.filter(Boolean).length) {
+      client.say(channel, `Please insert a reason for banning this user.`);
+      return;
+    }
     const reason = `${channelToUsername(channel)}: ${reasonArr.join(
       ' '
     )} - by ${author.username}`;
 
-    await client
-      .ban(channel, user, reason)
-      .catch((err) => {
-        console.log(err);
-        client.say(channel, `Could not perform operation`)
-      });
+    await client.ban(channel, user, reason).catch((err) => {
+      console.log(err);
+      client.say(channel, `Could not perform operation`);
+    });
     client.say(channel, `${user} has been banned.`);
     await this.queue.add(Action.BAN, {
       action: Action.BAN,

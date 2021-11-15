@@ -17,6 +17,8 @@ import {
   BotPatterns,
 } from '@baneverywhere/bot-interfaces';
 import { Actions } from '@prisma/client';
+import { channelToUsername } from './bot-client/utils';
+import { Observable } from 'rxjs';
 
 @Controller('app')
 export class AppController {
@@ -55,18 +57,28 @@ export class AppController {
   @MessagePattern('bot:disconnect:channel')
   disconnectFromChannel({
     channelName,
-  }: BotDisconnectChannelParams): BotGetStatusResponse {
-    this.botClientService.leaveChannel(channelName);
-    return {
-      status: this.botClientService.getStatus(),
-      identifier: this.botIdentifier,
-    };
+  }: BotDisconnectChannelParams): BotGetStatusResponse | Never {
+    const status = this.botClientService.getStatus();
+    if(status.users.includes(`#${channelName}`)){
+      this.botClientService.leaveChannel(channelName);
+      return {
+        status: this.botClientService.getStatus(),
+        identifier: this.botIdentifier,
+      };
+    } else {
+      return respondLater();
+    }
   }
 
   @EventPattern(BotPatterns.BOT_BAN_USER)
   banUser(action: Actions) {
     const status = this.botClientService.getStatus();
-    if(status.users.find(user => action.queueFor === user)){
+    const channel = `#${action.queueFor}`;
+    if (
+      status.users.find(
+        (user) => channel === user
+      )
+    ) {
       return this.botClientService.banUser(action.queueFor, action);
     } else {
       return respondLater();
@@ -76,7 +88,7 @@ export class AppController {
   @EventPattern(BotPatterns.BOT_UNBAN_USER)
   unbanUser(action: Actions) {
     const status = this.botClientService.getStatus();
-    if(status.users.find(user => action.queueFor === user)){
+    if (status.users.find((user) => action.queueFor === user)) {
       return this.botClientService.unbanUser(action.queueFor, action);
     } else {
       return respondLater();

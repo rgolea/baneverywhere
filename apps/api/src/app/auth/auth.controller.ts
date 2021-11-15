@@ -4,22 +4,18 @@ import {
   Res,
   HttpStatus,
   UseGuards,
-  Inject,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TwitchUserProfile } from '@baneverywhere/api-interfaces';
 import { TwitchProfile } from '../core/strategies/twitch-profile';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { BOT_HANDLER_CONNECTION } from '@baneverywhere/namespaces';
-import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
-    @Inject(BOT_HANDLER_CONNECTION) private botHandlerClient: ClientProxy
+    private readonly jwtService: JwtService
   ) {}
 
   @Get('/twitch')
@@ -32,7 +28,6 @@ export class AuthController {
       await this.usersService.createOrUpdateUser(profile)
     );
     const token = this.jwtService.sign({ id, twitchId });
-    this.botHandlerClient.emit('user.online', profile.login);
     res.setHeader('X-Access-Token', token);
     res.setHeader('Access-Control-Expose-Headers', 'X-Access-Token');
     res.json({

@@ -12,14 +12,15 @@ datasource db {
 }
 
 model User {
-  @@map("users")
-  id    String @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  login String @unique
-  display_name String @unique
-  twitchId String @unique
+  id                String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  login             String   @unique
+  display_name      String   @unique
+  twitchId          String   @unique
   profile_image_url String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("users")
 }
 
 enum BanEverywhereSettings {
@@ -29,17 +30,18 @@ enum BanEverywhereSettings {
 }
 
 model Settings {
-  @@map("settings")
-  id    String @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  fromId String
+  id           String                @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  fromId       String
   fromUsername String
-  toId String
-  toUsername String
-  settings BanEverywhereSettings @default(NONE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  toId         String
+  toUsername   String
+  settings     BanEverywhereSettings @default(NONE)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
   @@unique([fromId, toId])
   @@unique([fromUsername, toUsername])
+  @@map("settings")
 }
 
 enum Action {
@@ -48,14 +50,29 @@ enum Action {
 }
 
 model Actions {
-  @@map("actions")
-  id    String @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  action Action
-  user String
-  streamer String
+  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  action    Action
+  user      String
+  streamer  String
   moderator String
-  reason String?
-  queueFor String
+  reason    String?
+  queueFor  String
+  inQueue   Boolean? @default(false)
+  approved  Boolean?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("actions")
+}
+
+model Channels {
+  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  machine   String
+  username  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([username])
+  @@unique([machine, username])
+  @@map("channels")
 }

@@ -5,8 +5,10 @@ import { AppService } from './app.service';
 import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { BOT_CONNECTION } from '@baneverywhere/namespaces';
 import { v4 as uuidv4 } from 'uuid';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BotPatterns } from '@baneverywhere/bot-interfaces';
+import { BotDatabaseModule, BotDatabaseService } from '@baneverywhere/db';
+import { BullModule } from "@nestjs/bull";
 
 @Module({
   imports: [
@@ -18,16 +20,30 @@ import { BotPatterns } from '@baneverywhere/bot-interfaces';
         options: { url: 'redis://localhost:6379' },
       },
     ]),
+    BotDatabaseModule,
+    BullModule.registerQueueAsync({
+      name: 'queue',
+      useFactory: (config: ConfigService) => ({
+        redis: {
+          host: config.get('REDIS_HOST', 'localhost'),
+          port: config.get('REDIS_PORT', 6379),
+        },
+      }),
+      imports: [ConfigModule],
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements OnApplicationBootstrap {
   constructor(
-    @Inject(BOT_CONNECTION) private readonly botHandlerClient: ClientProxy
+    @Inject(BOT_CONNECTION) private readonly botHandlerClient: ClientProxy,
+    private readonly dbService: BotDatabaseService
   ) {}
 
-  onApplicationBootstrap() {
+  async onApplicationBootstrap() {
+    await this.dbService.channels.deleteMany({});
     setTimeout(() => {
       this.botHandlerClient.emit<void, unknown>(
         BotPatterns.BOT_GET_STATUS,

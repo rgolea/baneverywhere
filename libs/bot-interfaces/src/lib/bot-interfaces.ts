@@ -9,6 +9,8 @@ export enum BotPatterns {
   BOT_CONNECT_CHANNEL = 'bot:connect:channel', // Make bot connect to a twitch channel
   BOT_BAN_USER = 'bot:ban:user',
   BOT_UNBAN_USER = 'bot:unban:user',
+  USER_ONLINE = 'user:online',
+  USER_OFFLINE = 'user:offline',
 }
 
 export interface BotStatus {

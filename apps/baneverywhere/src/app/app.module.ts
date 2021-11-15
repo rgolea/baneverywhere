@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { NgxsModule } from '@ngxs/store';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -14,7 +14,8 @@ import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { StoreModule } from './store/store.module';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 import { SweetAlert2Module } from "@sweetalert2/ngx-sweetalert2";
-
+import * as Sentry from "@sentry/angular";
+import { Router } from '@angular/router';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +38,23 @@ import { SweetAlert2Module } from "@sweetalert2/ngx-sweetalert2";
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
       multi: true
-    }
+    },
+    {
+      provide: ErrorHandler,
+      useValue: Sentry.createErrorHandler({
+        showDialog: true,
+      }),
+    },
+    {
+      provide: Sentry.TraceService,
+      deps: [Router],
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (traceService: Sentry.TraceService) => (() => traceService),
+      deps: [Sentry.TraceService],
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent],
 })
