@@ -8,3 +8,7 @@ export class LoadMoreFollows {
     public payload?: { after?: string }
   ) {}
 }
+
+export class UnloadFollows {
+  static readonly type = '[FOLLOWS] Unload follows';
+}

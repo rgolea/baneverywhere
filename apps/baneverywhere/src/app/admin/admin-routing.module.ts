@@ -14,6 +14,10 @@ const routes: Routes = [
           import('./settings/settings.module').then((m) => m.SettingsModule),
       },
       {
+        path: 'queue',
+        loadChildren: () => import('./queue/queue.module').then((m) => m.QueueModule),
+      },
+      {
         path: '**',
         pathMatch: 'full',
         redirectTo: 'settings'

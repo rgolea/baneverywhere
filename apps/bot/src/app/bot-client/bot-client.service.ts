@@ -8,6 +8,7 @@ import { BotStatus } from '@baneverywhere/bot-interfaces';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { Actions } from '@prisma/client';
+import { channelToUsername } from './utils';
 
 @Injectable()
 export class BotClientService implements OnModuleInit {
@@ -30,7 +31,7 @@ export class BotClientService implements OnModuleInit {
     ) {
       this.client.say(channel, `I need to be a moderator @${channel}`);
     }
-    this.client.say(channel, `I'm here @${channel}`);
+    this.client.say(channel, `I'm here @${channel}, sorry for the delay`);
     return this.getStatus();
   }
 
@@ -53,5 +54,16 @@ export class BotClientService implements OnModuleInit {
 
   unbanUser(channel: string, action: Actions) {
     this.client.unban(channel, action.user);
+  }
+
+  sendToAll(message: string) {
+    this.client
+      .getChannels()
+      .forEach((channel) =>
+        this.client.say(
+          channel,
+          `${channelToUsername(channel)} -> Important: ${message}`
+        )
+      );
   }
 }

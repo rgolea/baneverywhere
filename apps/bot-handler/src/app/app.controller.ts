@@ -44,7 +44,8 @@ export class AppController {
 
   @EventPattern(BotPatterns.USER_ONLINE)
   async userOnline(channelName: string) {
-    console.log('user online', channelName);
+    // console.log('user online', channelName);
+
     const botId =
       await this.appService.preassignMachineToUser(channelName);
     if (!botId) return 'NOT_JOINED';

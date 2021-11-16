@@ -12,8 +12,7 @@ export class UnbanCommand extends CommandExecutor {
     channel,
     client,
     arguments: args,
-  }: CommandOrigins): Promise<void> {
-    console.log(author, channel, client, args);
+  }: CommandOrigins): Promise<void> {;
     if (!author.mod && author.username !== channelToUsername(channel, ''))
       return;
     const [user] = args;

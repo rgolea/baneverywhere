@@ -115,7 +115,6 @@ export class QueueProcessor {
     cb: DoneCallback
   ) {
     const { username, cursor } = job.data;
-    console.log(username, cursor);
     if (!cursor) {
       await this.dbService.actions.deleteMany({
         where: {

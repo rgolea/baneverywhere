@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BotClientModule } from './bot-client/bot-client.module';
 import { environment } from '../environments/environment';
 import { BullModule } from '@nestjs/bull';
+import { BotClientService } from './bot-client/bot-client.service';
 
 @Module({
   imports: [
@@ -56,7 +57,8 @@ export class AppModule implements OnModuleInit, OnModuleDestroy {
   constructor(
     @Inject(BOT_IDENTIFIER) private readonly botIdentifier: string,
     @Inject(BOT_HANDLER_CONNECTION)
-    private readonly botHandlerClient: ClientProxy
+    private readonly botHandlerClient: ClientProxy,
+    private readonly botService: BotClientService,
   ) {}
 
   onModuleInit() {
@@ -65,5 +67,6 @@ export class AppModule implements OnModuleInit, OnModuleDestroy {
 
   onModuleDestroy() {
     this.botHandlerClient.emit('bot.identifier.destroyed', this.botIdentifier);
+    this.botService.sendToAll('Restarting service');
   }
 }

@@ -36,10 +36,10 @@ export interface BotDisconnectChannelParams {
   channelName: string;
 }
 
-export type Never = Observable<undefined>;
+export type Never = Observable<number>;
 
 export const respondLater: () => Never = () => interval(10000).pipe(
   skip(1),
   take(1),
-  mapTo(undefined)
+  mapTo(1)
 );

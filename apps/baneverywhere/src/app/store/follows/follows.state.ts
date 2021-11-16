@@ -8,7 +8,7 @@ import {
 import { Action, createSelector, Selector, State, StateContext, Store } from '@ngxs/store';
 import { map, switchMap, tap } from 'rxjs';
 import { AuthState } from '../auth/auth.state';
-import { LoadFollows, LoadMoreFollows } from './follows.actions';
+import { LoadFollows, LoadMoreFollows, UnloadFollows } from './follows.actions';
 import { Omit, Optional } from 'utility-types';
 
 export class FollowsStateModel
@@ -60,6 +60,14 @@ export class FollowsState {
   @Action(LoadFollows)
   loadFollows() {
     this.store.dispatch(new LoadMoreFollows());
+  }
+
+  @Action(UnloadFollows)
+  unloadFollows(ctx: StateContext<FollowsStateModel>) {
+    ctx.setState({
+      follows: [],
+      total: 0,
+    });
   }
 
   @Action(LoadMoreFollows)

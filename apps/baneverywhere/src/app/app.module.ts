@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 
 // layouts
 import { AuthComponent } from './auth/auth.component';
-import { PagesDropdownComponent } from './components/dropdowns/pages-dropdown/pages-dropdown.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
@@ -19,7 +18,6 @@ import { Router } from '@angular/router';
 @NgModule({
   declarations: [
     AppComponent,
-    PagesDropdownComponent,
     AuthComponent
   ],
   imports: [

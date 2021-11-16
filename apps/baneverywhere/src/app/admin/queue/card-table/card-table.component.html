@@ -1,0 +1,195 @@
+<div
+  class="
+    relative
+    flex flex-col
+    min-w-0
+    break-words
+    w-full
+    mb-6
+    shadow-lg
+    rounded
+    bg-white
+  "
+>
+  <div class="rounded-t mb-0 px-4 py-3 border-0">
+    <div class="flex flex-wrap items-center">
+      <div class="relative w-full px-4 max-w-full flex-grow flex-1">
+        <h3 class="font-semibold text-lg text-blueGray-700">Card Tables</h3>
+      </div>
+    </div>
+  </div>
+  <div class="block w-full overflow-x-auto">
+    <!-- Projects table -->
+    <table class="items-center w-full bg-transparent border-collapse">
+      <thead>
+        <tr>
+          <th
+            class="
+              px-6
+              align-middle
+              border border-solid
+              py-3
+              text-xs
+              uppercase
+              border-l-0 border-r-0
+              whitespace-nowrap
+              font-semibold
+              text-left
+              bg-blueGray-50
+              text-blueGray-500
+              border-blueGray-100
+            "
+          >
+            User
+          </th>
+          <th
+            class="
+              px-6
+              align-middle
+              border border-solid
+              py-3
+              text-xs
+              uppercase
+              border-l-0 border-r-0
+              whitespace-nowrap
+              font-semibold
+              text-left
+              bg-blueGray-50
+              text-blueGray-500
+              border-blueGray-100
+            "
+          >
+            Reason
+          </th>
+          <th
+            class="
+              px-6
+              align-middle
+              border border-solid
+              py-3
+              text-xs
+              uppercase
+              border-l-0 border-r-0
+              whitespace-nowrap
+              font-semibold
+              text-left
+              bg-blueGray-50
+              text-blueGray-500
+              border-blueGray-100
+            "
+          >
+            Type
+          </th>
+          <th
+            class="
+              px-6
+              align-middle
+              border border-solid
+              py-3
+              text-xs
+              uppercase
+              border-l-0 border-r-0
+              whitespace-nowrap
+              font-semibold
+              text-left
+              bg-blueGray-50
+              text-blueGray-500
+              border-blueGray-100
+            "
+          >
+            Created At
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let queue of queue$ | async">
+          <th
+            class="
+              border-t-0
+              px-6
+              align-middle
+              border-l-0 border-r-0
+              text-xs
+              whitespace-nowrap
+              p-4
+            "
+          >
+            {{ queue.user }}
+          </th>
+          <td
+            class="
+              border-t-0
+              px-6
+              align-middle
+              border-l-0 border-r-0
+              text-xs
+              whitespace-nowrap
+              p-4
+            "
+          >
+            {{ queue.reason }}
+          </td>
+          <td
+            class="
+              border-t-0
+              px-6
+              align-middle
+              border-l-0 border-r-0
+              text-xs
+              whitespace-nowrap
+              p-4
+            "
+          >
+            {{ queue.action }}
+          </td>
+          <td
+            class="
+              border-t-0
+              px-6
+              align-middle
+              border-l-0 border-r-0
+              text-xs
+              whitespace-nowrap
+              p-4
+            "
+          >
+            {{ queue.createdAt | date: 'medium' }}
+          </td>
+          <td
+            class="
+              border-t-0
+              px-6
+              align-middle
+              border-l-0 border-r-0
+              text-xs
+              whitespace-nowrap
+              p-4
+            "
+          >
+            <button
+              class="
+                text-grey-500
+                background-transparent
+                font-bold
+                uppercase
+                px-8
+                py-3
+                outline-none
+                focus:outline-none
+                mr-1
+                mb-1
+                ease-linear
+                transition-all
+                duration-150
+              "
+              [swal]="{ title: 'Proceed', showCancelButton: true, icon: 'question', text: 'Are you sure you want to ' + queue.action + '?'}"
+              type="button"
+            >
+              <i class="fas fa-gavel"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

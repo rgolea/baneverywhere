@@ -17,7 +17,7 @@ export class AppService implements OnModuleInit {
     @Inject(BOT_HANDLER_CONNECTION) private botHandlerClient: ClientProxy
   ) {}
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_MINUTE)
   async checkOnline() {
     this.checkIfUserIsOnline();
   }
@@ -36,6 +36,8 @@ export class AppService implements OnModuleInit {
       skip: cursor ? 1 : 0,
       ...(cursor ? { cursor: { id: cursor } } : {}),
     });
+
+    if(users.length === 0) return;
 
     const {
       data: { access_token },

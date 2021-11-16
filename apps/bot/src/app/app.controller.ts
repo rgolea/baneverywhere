@@ -45,7 +45,10 @@ export class AppController {
     channelName,
     botId,
   }: BotConnectChannelParams): Promise<BotConnectChannelResponse> | Never {
-    if (botId === this.botIdentifier) {
+    if (
+      botId === this.botIdentifier &&
+      !this.botClientService.getStatus().users.includes(`#${channelName}`)
+    ) {
       return this.botClientService.joinChannel(channelName).then((status) => ({
         status,
       }));
@@ -59,7 +62,7 @@ export class AppController {
     channelName,
   }: BotDisconnectChannelParams): BotGetStatusResponse | Never {
     const status = this.botClientService.getStatus();
-    if(status.users.includes(`#${channelName}`)){
+    if (status.users.includes(`#${channelName}`)) {
       this.botClientService.leaveChannel(channelName);
       return {
         status: this.botClientService.getStatus(),
@@ -74,11 +77,7 @@ export class AppController {
   banUser(action: Actions) {
     const status = this.botClientService.getStatus();
     const channel = `#${action.queueFor}`;
-    if (
-      status.users.find(
-        (user) => channel === user
-      )
-    ) {
+    if (status.users.find((user) => channel === user)) {
       return this.botClientService.banUser(action.queueFor, action);
     } else {
       return respondLater();

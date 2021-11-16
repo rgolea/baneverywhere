@@ -6,6 +6,7 @@ import { Observable, Subscription } from 'rxjs';
 import {
   LoadFollows,
   LoadMoreFollows,
+  UnloadFollows
 } from '../../../store/follows/follows.actions';
 import { FollowsState } from '../../../store/follows/follows.state';
 import { SwalComponent, SwalPortalTargets } from '@sweetalert2/ngx-sweetalert2';
@@ -33,6 +34,7 @@ export class CardSettingsComponent implements OnInit {
   constructor(private readonly store: Store, public readonly swalTargets: SwalPortalTargets) {}
 
   ngOnInit() {
+    this.store.dispatch(new UnloadFollows());
     this.store.dispatch(new LoadFollows());
     this.subscriptions.push(
       this.settings$.subscribe(settings => {
