@@ -66,13 +66,13 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
-          REDIS_PORT=${{ secrets.REDIS_PORT }}
-          REDIS_HOST=${{ secrets.REDIS_HOST }}
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          TWITCH_CLIENT_ID=${{ secrets.TWITCH_CLIENT_ID }}
-          TWITCH_CLIENT_SECRET=${{ secrets.TWITCH_CLIENT_SECRET }}
-          TWITCH_CLIENT_ACCESS_TOKEN=${{ secrets.TWITCH_CLIENT_ACCESS_TOKEN }}
-          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          TWITCH_CLIENT_ACCESS_TOKEN: ${{ secrets.TWITCH_CLIENT_ACCESS_TOKEN }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
