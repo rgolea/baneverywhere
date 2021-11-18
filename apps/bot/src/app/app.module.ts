@@ -13,11 +13,17 @@ import { BotClientService } from './bot-client/bot-client.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
+        useFactory: async (config: ConfigService) => ({
+          transport: Transport.REDIS,
+          options: {
+            url: `redis://${config.get('REDIS_HOST', 'localhost')}:${config.get('REDIS_PORT', 6379)}`,
+          }
+        }),
+        inject: [ConfigService],
         name: BOT_HANDLER_CONNECTION,
-        transport: Transport.REDIS,
-        options: { url: 'redis://localhost:6379' },
       },
     ]),
     BotClientModule.forRootAsync({

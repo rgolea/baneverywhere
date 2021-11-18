@@ -8,16 +8,22 @@ import { v4 as uuidv4 } from 'uuid';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BotPatterns } from '@baneverywhere/bot-interfaces';
 import { BotDatabaseModule, BotDatabaseService } from '@baneverywhere/db';
-import { BullModule } from "@nestjs/bull";
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
     ConfigModule,
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
+        useFactory: async (config: ConfigService) => ({
+          transport: Transport.REDIS,
+          options: {
+            url: `redis://${config.get('REDIS_HOST', 'localhost')}:${config.get('REDIS_PORT', 6379)}`,
+          }
+        }),
+        inject: [ConfigService],
         name: BOT_CONNECTION,
-        transport: Transport.REDIS,
-        options: { url: 'redis://localhost:6379' },
       },
     ]),
     BotDatabaseModule,

@@ -1,83 +1,100 @@
 version: "3.9"
 services:
   nginx:
-    build:
-      dockerfile: ./config/docker/nginx.Dockerfile
-      context: .
     image: baneverywhere-proxy:latest
     container_name: baneverywhere-nginx
     ports:
       - "80:80"
-    # depends_on:
-    #   - api
+    depends_on:
+      - api
 
-  # api:
-  #   build:
-  #     dockerfile: ./config/docker/api.Dockerfile
-  #     context: .
-  #   image: baneverywhere:latest
-  #   command: node apps/api/main.js
-  #   container_name: api-baneverywhere
-  #   stdin_open: true
-  #   tty: true
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - mongodb
-  #     - redis
+  api:
+    image: baneverywhere:latest
+    command: node apps/api/main.js
+    container_name: api-baneverywhere
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    expose:
+      - 3333
+    env:
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - JWT_SECRET=${JWT_SECRET}
+      - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
+      - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}
 
-  # bot:
-  #   image: baneverywhere:latest
-  #   command: node apps/bot/main.js
-  #   container_name: bot-baneverywhere
-  #   stdin_open: true
-  #   tty: true
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - redis
+    depends_on:
+      - mongodb
+      - redis
 
-  # bot-handler:
-  #   image: baneverywhere:latest
-  #   command: node apps/bot-handler/main.js
-  #   container_name: bot-handler-baneverywhere
-  #   stdin_open: true
-  #   tty: true
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - redis
-  #     - mongodb
-  # online-checker:
-  #   image: baneverywhere:latest
-  #   command: node apps/online-checker/main.js
-  #   container_name: online-checker-baneverywhere
-  #   stdin_open: true
-  #   tty: true
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - redis
-  #     - mongodb
+  bot:
+    image: baneverywhere:latest
+    command: node apps/bot/main.js
+    container_name: bot-baneverywhere
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    env:
+      - BAN_BOT_USER=baneverywhere
+      - TWITCH_CLIENT_ACCESS_TOKEN=${TWITCH_CLIENT_ACCESS_TOKEN}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+    depends_on:
+      - redis
 
-  # queue-processor:
-  #   image: baneverywhere:latest
-  #   command: node apps/queue-processor/main.js
-  #   container_name: queue-processor-baneverywhere
-  #   stdin_open: true
-  #   tty: true
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - redis
-  #     - mongodb
+  bot-handler:
+    image: baneverywhere:latest
+    command: node apps/bot-handler/main.js
+    container_name: bot-handler-baneverywhere
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    env:
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - MONGODB_URI=${MONGODB_URI}
+    depends_on:
+      - redis
+      - mongodb
+  online-checker:
+    image: baneverywhere:latest
+    command: node apps/online-checker/main.js
+    container_name: online-checker-baneverywhere
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    env:
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - MONGODB_URI=${MONGODB_URI}
+    depends_on:
+      - redis
+      - mongodb
 
-  # mongodb:
-  #   image: mongo:5.0.4
-  #   container_name: mongodb-baneverywhere
-  #   restart: unless-stopped
-  #   entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0"]
+  queue-processor:
+    image: baneverywhere:latest
+    command: node apps/queue-processor/main.js
+    container_name: queue-processor-baneverywhere
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    env:
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - MONGODB_URI=${MONGODB_URI}
+    depends_on:
+      - redis
+      - mongodb
 
-  # redis:
-  #   image: redis:6.2.6
-  #   container_name: redis-baneverywhere
-  #   restart: unless-stopped
-  #   command: redis-server
+  mongodb:
+    image: mongo:5.0.4
+    container_name: mongodb-baneverywhere
+    restart: unless-stopped
+    entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0"]
 
-# volumes:
-#   dependencies:
+  redis:
+    image: redis:6.2.6
+    container_name: redis-baneverywhere
+    restart: unless-stopped
+    command: redis-server

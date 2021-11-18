@@ -11,6 +11,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v2
         with:
@@ -62,6 +63,27 @@ jobs:
           push: true
           tags: rgolea/baneverywhere-proxy:latest
           context: .
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        env:
+          - REDIS_PORT=${{ secrets.REDIS_PORT }}
+          - REDIS_HOST=${{ secrets.REDIS_HOST }}
+          - JWT_SECRET=${{ secrets.JWT_SECRET }}
+          - TWITCH_CLIENT_ID=${{ secrets.TWITCH_CLIENT_ID }}
+          - TWITCH_CLIENT_SECRET=${{ secrets.TWITCH_CLIENT_SECRET }}
+          - TWITCH_CLIENT_ACCESS_TOKEN=${{ secrets.TWITCH_CLIENT_ACCESS_TOKEN }}
+          - MONGODB_URI=${{ secrets.MONGODB_URI }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          envs: REDIS_PORT,REDIS_HOST,JWT_SECRET,TWITCH_CLIENT_ID,TWITCH_CLIENT_SECRET,TWITCH_CLIENT_ACCESS_TOKEN,MONGODB_URI
+          script: |
+            wget https://raw.githubusercontent.com/${{ env.GITHUB_REPOSITORY }}/master/docker-compose.yml
+            docker-compose up -d
+
 
   agents:
     runs-on: ubuntu-latest
