@@ -53,10 +53,10 @@ jobs:
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.DOCKER_HUB_TOKEN }}
       - name: Build and push Proxy Image
-        file: ./config/docker/nginx.Dockerfile
         id: docker_build_proxy
         uses: docker/build-push-action@v2
         with:
+          file: ./config/docker/nginx.Dockerfile
           cache_from: ./node_modules/.docker-cache/proxy
           cache_to: ./node_modules/.docker-cache/proxy
           push: true
