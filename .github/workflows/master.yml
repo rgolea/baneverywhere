@@ -46,6 +46,7 @@ jobs:
         with:
           username: rgolea
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - run: ls -la
       - name: Build and push API Image
         id: docker_build_api
         uses: docker/build-push-action@v2
