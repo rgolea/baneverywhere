@@ -52,7 +52,8 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:0.9.1
           file: ./config/docker/api.Dockerfile
-          no-cache: true
+          cache-from: type=registry,ref=rgolea/baneverywhere:latest
+          cache-to: type=inline
           push: true
           tags: rgolea/baneverywhere:latest
           context: .
@@ -62,7 +63,8 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:0.9.1
           file: ./config/docker/nginx.Dockerfile
-          no-cache: true
+          cache-from: type=registry,ref=rgolea/baneverywhere-proxy:latest
+          cache-to: type=inline
           push: true
           tags: rgolea/baneverywhere-proxy:latest
           context: .
