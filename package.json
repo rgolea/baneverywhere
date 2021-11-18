@@ -57,6 +57,7 @@
     "@ngxs/logger-plugin": "^3.7.2",
     "@ngxs/store": "^3.7.2",
     "@nrwl/angular": "13.1.2",
+    "@nrwl/nx-cloud": "^12.5.4",
     "@popperjs/core": "^2.10.2",
     "@prisma/client": "^3.4.2",
     "@sentry/angular": "^6.14.3",

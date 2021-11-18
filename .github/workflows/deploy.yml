@@ -1,0 +1,27 @@
+name: Deploy to Production
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+          with:
+            node-version: 16.13
+      - run: git fetch origin master
+      - name: npm install
+        run: npm install
+      - name: Nrwl Nx
+        uses: MansaGroup/nrwl-nx-action@v2
+        with:
+          targets: lint,build
+          projects: api,baneverywhere,bot,bot-handler,online-checker,queue-processor
+          parallel: 'true'
+          # affected: 'true'
+          nxCloud: 'true'
