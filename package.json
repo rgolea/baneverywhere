@@ -27,7 +27,8 @@
     "test": "ng test",
     "update": "nx migrate latest",
     "workspace-generator": "nx workspace-generator",
-    "generate": "npx prisma generate"
+    "generate": "npx prisma generate",
+    "prepare:deploy": "nx build api --prod && nx build baneverywhere --prod && nx build bot --prod && nx build bot-handler --prod && nx build online-checker --prod && nx build queue-processor --prod"
   },
   "dependencies": {
     "@angular/animations": "12.2.10",

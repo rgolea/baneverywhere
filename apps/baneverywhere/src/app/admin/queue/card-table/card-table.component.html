@@ -16,6 +16,18 @@
       <div class="relative w-full px-4 max-w-full flex-grow flex-1">
         <h3 class="font-semibold text-lg text-blueGray-700">Card Tables</h3>
       </div>
+      <div>
+        <form>
+          <select [formControl]="form">
+            <option
+              *ngFor="let obj of actionTypes | keyvalue"
+              [value]="obj.value"
+            >
+              {{ obj.key }}
+            </option>
+          </select>
+        </form>
+      </div>
     </div>
   </div>
   <div class="block w-full overflow-x-auto">
@@ -182,8 +194,17 @@
                 transition-all
                 duration-150
               "
-              [swal]="{ title: 'Proceed', showCancelButton: true, icon: 'question', text: 'Are you sure you want to ' + queue.action + '?'}"
+              [swal]="{
+                title: 'Proceed',
+                showCancelButton: true,
+                icon: 'question',
+                text: 'Are you sure you want to ' + queue.action + '?',
+                showDenyButton: true,
+                denyButtonText: 'Don\'t ' + queue.action
+              }"
               type="button"
+              (confirm)="processAction(true, queue)"
+              (deny)="processAction(false, queue)"
             >
               <i class="fas fa-gavel"></i>
             </button>

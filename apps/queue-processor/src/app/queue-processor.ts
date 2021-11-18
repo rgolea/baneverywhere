@@ -115,6 +115,11 @@ export class QueueProcessor {
     cb: DoneCallback
   ) {
     const { username, cursor } = job.data;
+    const userOnline = await this.dbService.channels.count({
+      where: {
+        username: username,
+      }
+    });
     if (!cursor) {
       await this.dbService.actions.deleteMany({
         where: {
@@ -149,13 +154,16 @@ export class QueueProcessor {
           : BotPatterns.BOT_UNBAN_USER;
       this.botHandlerClient.emit(pattern, action);
     });
-    await this.dbService.actions.deleteMany({
-      where: {
-        id: {
-          in: actions.map((action) => action.id),
+
+    if(userOnline) {
+      await this.dbService.actions.deleteMany({
+        where: {
+          id: {
+            in: actions.map((action) => action.id),
+          }
         }
-      }
-    }).catch(err => console.log(err));
+      }).catch(err => console.log(err));
+    }
 
     cb();
   }

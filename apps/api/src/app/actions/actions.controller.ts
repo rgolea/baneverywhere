@@ -1,15 +1,20 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Put, Query, UseGuards } from '@nestjs/common';
 import { Actions } from '@prisma/client';
 import { ActionsService } from './actions.service';
 import { Prisma, Action } from '@prisma/client';
 import { TwitchProfile } from '../core/strategies/twitch-profile';
-import { TwitchUserProfile } from '@baneverywhere/api-interfaces';
+import { TwitchUserProfile, StatusResponse } from '@baneverywhere/api-interfaces';
 import { AuthGuard } from '@nestjs/passport';
+import { InjectQueue } from "@nestjs/bull";
+import { Queue } from "bull";
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('actions')
 export class ActionsController {
-  constructor(private readonly actionsService: ActionsService) {}
+  constructor(
+    private readonly actionsService: ActionsService,
+    @InjectQueue('queue') private readonly queue: Queue,
+  ) {}
 
   @Get()
   findAll(
@@ -24,6 +29,7 @@ export class ActionsController {
         ...where,
         ...action ? { action } : {},
         queueFor: toUsername,
+        inQueue: false
       },
       take,
       ...(cursor ? { cursor } : {}),
@@ -32,5 +38,19 @@ export class ActionsController {
         createdAt: 'desc',
       },
     });
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body('approved') approved: boolean,
+    @TwitchProfile() { login: channelName }: TwitchUserProfile,
+  ): Promise<StatusResponse<boolean>>{
+    await this.actionsService.update(id, approved);
+    await this.queue.add('queue', { username: channelName });
+    return {
+      statusCode: HttpStatus.OK,
+      data: true
+    }
   }
 }

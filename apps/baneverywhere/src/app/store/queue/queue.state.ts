@@ -4,10 +4,10 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { Actions as QueueModel, Prisma } from '@prisma/client';
 import { tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { LoadQueueForUser, UnloadQueue } from './queue-actions';
+import { LoadQueueForUser, UnloadQueue, SaveQueue } from './queue-actions';
 
 export type Queue = Pick<
-QueueModel,
+  QueueModel,
   'action' | 'id' | 'approved' | 'createdAt' | 'reason' | 'user'
 >;
 
@@ -48,19 +48,21 @@ export class QueueState {
       queue: [...state.queue],
     });
     const cursor = state.queue[state.queue.length - 1]?.id;
-    return this.http.get<QueueModel[]>(`${environment.API_URL}/actions`, {
-      params: {
-        type: action.payload.type,
-        ...((cursor ? { cursor } : {}) as Prisma.ActionsWhereUniqueInput),
-      },
-    }).pipe(
-      tap(val => {
-        ctx.setState({
-          loading: false,
-          queue: [...state.queue, ...val],
-        });
+    return this.http
+      .get<QueueModel[]>(`${environment.API_URL}/actions`, {
+        params: {
+          type: action.payload.type,
+          ...((cursor ? { cursor } : {}) as Prisma.ActionsWhereUniqueInput),
+        },
       })
-    );
+      .pipe(
+        tap((val) => {
+          ctx.setState({
+            loading: false,
+            queue: [...state.queue, ...val],
+          });
+        })
+      );
   }
 
   @Action(UnloadQueue)
@@ -69,5 +71,21 @@ export class QueueState {
       loading: false,
       queue: [],
     });
+  }
+
+  @Action(SaveQueue)
+  saveQueue(ctx: StateContext<QueueStateModel>, action: SaveQueue) {
+    return this.http
+      .put(`${environment.API_URL}/actions/${action.payload.queueId}`, {
+        approved: action.payload.approved,
+      })
+      .pipe(
+        tap(() => {
+          const state = ctx.getState();
+          ctx.patchState({
+            queue: state.queue.filter((q) => q.id !== action.payload.queueId),
+          });
+        })
+      );
   }
 }

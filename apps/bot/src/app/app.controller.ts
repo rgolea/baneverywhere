@@ -87,7 +87,8 @@ export class AppController {
   @EventPattern(BotPatterns.BOT_UNBAN_USER)
   unbanUser(action: Actions) {
     const status = this.botClientService.getStatus();
-    if (status.users.find((user) => action.queueFor === user)) {
+    const channel = `#${action.queueFor}`;
+    if (status.users.find((user) => channel === user)) {
       return this.botClientService.unbanUser(action.queueFor, action);
     } else {
       return respondLater();

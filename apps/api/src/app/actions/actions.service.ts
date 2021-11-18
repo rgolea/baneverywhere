@@ -9,4 +9,14 @@ export class ActionsService {
   findAll(args: Prisma.ActionsFindManyArgs): Promise<Actions[]> {
     return this.dbService.actions.findMany(args);
   }
+
+  update(id: string, approved: boolean) {
+    return this.dbService.actions.update({
+      where: { id },
+      data: {
+        inQueue: true,
+        approved
+      },
+    })
+  }
 }
