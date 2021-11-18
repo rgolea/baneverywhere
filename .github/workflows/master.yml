@@ -53,6 +53,7 @@ jobs:
           file: ./config/docker/api.Dockerfile
           push: true
           tags: rgolea/baneverywhere:latest
+          context: .
       - name: Build and push Proxy Image
         id: docker_build_proxy
         uses: docker/build-push-action@v2
@@ -60,6 +61,7 @@ jobs:
           file: ./config/docker/nginx.Dockerfile
           push: true
           tags: rgolea/baneverywhere-proxy:latest
+          context: .
 
   agents:
     runs-on: ubuntu-latest
