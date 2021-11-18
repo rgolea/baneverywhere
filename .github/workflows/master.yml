@@ -35,7 +35,7 @@ jobs:
       - run: git fetch origin master
       - run: npm ci
       - run: npx nx-cloud start-ci-run
-      - run: npx nx affected --target=build --configuration=production --parallel --max-parallel=3
+      - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=3
       - run: npx nx-cloud stop-all-agents
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
