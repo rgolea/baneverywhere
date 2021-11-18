@@ -46,7 +46,6 @@ jobs:
         with:
           username: rgolea
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      - run: ls -la
       - name: Build and push API Image
         id: docker_build_api
         uses: docker/build-push-action@v2
@@ -54,6 +53,14 @@ jobs:
           file: ./config/docker/api.Dockerfile
           push: true
           tags: rgolea/baneverywhere:latest
+          context: .
+      - name: Build and push API Image
+        id: docker_build_proxy
+        uses: docker/build-push-action@v2
+        with:
+          file: ./config/docker/nginx.Dockerfile
+          push: true
+          tags: rgolea/baneverywhere-proxy:latest
           context: .
       # - name: Build and push Proxy Image
       #   id: docker_build_proxy
@@ -69,7 +76,7 @@ jobs:
 
   agents:
     runs-on: ubuntu-latest
-    name: Agent 1
+    name: Nx Agent ${{ matrix.agent }}
     timeout-minutes: 60
     strategy:
       matrix:

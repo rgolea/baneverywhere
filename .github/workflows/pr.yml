@@ -36,7 +36,7 @@ jobs:
 
   agents:
     runs-on: ubuntu-latest
-    name: Agent 1
+    name: Nx Agent ${{ matrix.agent }}
     timeout-minutes: 60
     strategy:
       matrix:
