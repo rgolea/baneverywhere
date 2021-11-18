@@ -80,6 +80,7 @@ jobs:
           port: 22
           envs: REDIS_PORT,REDIS_HOST,JWT_SECRET,TWITCH_CLIENT_ID,TWITCH_CLIENT_SECRET,TWITCH_CLIENT_ACCESS_TOKEN,MONGODB_URI
           script: |
+            cd /app
             wget https://raw.githubusercontent.com/${{ env.GITHUB_REPOSITORY }}/master/docker-compose.yml
             docker-compose up -d
 
