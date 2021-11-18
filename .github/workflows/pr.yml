@@ -5,6 +5,7 @@ env:
   NX_CLOUD_DISTRIBUTED_EXECUTION: true
   NX_BRANCH: ${{ github.event.number || github.ref }}
   NX_RUN_GROUP: $${{ github.run_id }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
   pr:
@@ -17,18 +18,17 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            **/node_modules
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-npm-
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 16.13
-      - run: npm install
+      - run: npm ci
       - run: npx nx-cloud start-ci-run
       - run: npx nx affected --base=remotes/origin/master --target=build --parallel --max-parallel=3
       - run: npx nx-cloud stop-all-agents
@@ -44,16 +44,15 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            **/node_modules
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-npm-
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 16.13
-      - run: npm install
+      - run: npm ci
       - name: Start Nx Agent ${{ matrix.agent }}
         run: npx nx-cloud start-agent
