@@ -51,13 +51,10 @@ jobs:
         id: docker_build_api
         uses: docker/build-push-action@v2
         with:
-          driver-opts: image=moby/buildkit:0.9.1
           file: ./config/docker/api.Dockerfile
-          # cache-from: type=registry,ref=rgolea/baneverywhere:latest
-          # cache-to: type=inline
           push: true
           tags: rgolea/baneverywhere:latest
-          # context: .
+          context: .
       # - name: Build and push Proxy Image
       #   id: docker_build_proxy
       #   uses: docker/build-push-action@v2
