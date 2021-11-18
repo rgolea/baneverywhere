@@ -63,7 +63,6 @@ jobs:
           push: true
           tags: rgolea/baneverywhere-proxy:latest
           context: .
-
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
