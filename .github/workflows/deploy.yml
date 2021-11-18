@@ -41,8 +41,7 @@ jobs:
           node-version: 16.13
       - run: npm install
       - run: npx nx-cloud start-ci-run
-      - run: npx nx affected --target=build --parallel --max-parallel=3
-      - run: npx nx affected --target=test --parallel --max-parallel=2
+      - run: npx nx affected --base=origin/master --target=build --parallel --max-parallel=3
       - run: npx nx-cloud stop-all-agents
   agents:
     runs-on: ubuntu-latest
