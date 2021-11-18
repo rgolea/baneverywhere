@@ -33,9 +33,9 @@ jobs:
         with:
           node-version: 16.13
       - run: git fetch origin master
-      - run: npm ci --ignore-scripts
+      - run: npm ci
       - run: npx nx-cloud start-ci-run
-      - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=3
+      - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=2
       - run: npx nx-cloud stop-all-agents
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -54,11 +54,6 @@ jobs:
           push: true
           tags: rgolea/baneverywhere:latest
           context: .
-          cache-from: |
-            type=registry
-            ref=rgolea/baneverywhere:latest
-          cache-to: |
-            type=inline
       - name: Build and push API Image
         id: docker_build_proxy
         uses: docker/build-push-action@v2
@@ -67,11 +62,6 @@ jobs:
           push: true
           tags: rgolea/baneverywhere-proxy:latest
           context: .
-          cache-from: |
-            type=registry
-            ref=rgolea/baneverywhere:latest
-          cache-to: |
-            type=inline
 
   agents:
     runs-on: ubuntu-latest
@@ -94,7 +84,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 16.13
-      - run: npm ci --ignore-scripts
+      - run: npm ci
       - name: Start Nx Agent ${{ matrix.agent }}
         run: npx nx-cloud start-agent
 
