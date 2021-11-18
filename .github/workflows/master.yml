@@ -54,6 +54,11 @@ jobs:
           push: true
           tags: rgolea/baneverywhere:latest
           context: .
+          cache-from: |
+            type=registry
+            ref=rgolea/baneverywhere:latest
+          cache-to: |
+            type=inline
       - name: Build and push API Image
         id: docker_build_proxy
         uses: docker/build-push-action@v2
@@ -62,17 +67,11 @@ jobs:
           push: true
           tags: rgolea/baneverywhere-proxy:latest
           context: .
-      # - name: Build and push Proxy Image
-      #   id: docker_build_proxy
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     driver-opts: image=moby/buildkit:0.9.1
-      #     file: ./config/docker/nginx.Dockerfile
-      #     cache-from: type=registry,ref=rgolea/baneverywhere-proxy:latest
-      #     cache-to: type=inline
-      #     push: true
-      #     tags: rgolea/baneverywhere-proxy:latest
-      #     context: .
+          cache-from: |
+            type=registry
+            ref=rgolea/baneverywhere:latest
+          cache-to: |
+            type=inline
 
   agents:
     runs-on: ubuntu-latest
