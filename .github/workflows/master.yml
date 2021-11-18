@@ -52,22 +52,22 @@ jobs:
         with:
           driver-opts: image=moby/buildkit:0.9.1
           file: ./config/docker/api.Dockerfile
-          cache-from: type=registry,ref=rgolea/baneverywhere:latest
-          cache-to: type=inline
+          # cache-from: type=registry,ref=rgolea/baneverywhere:latest
+          # cache-to: type=inline
           push: true
           tags: rgolea/baneverywhere:latest
-          context: .
-      - name: Build and push Proxy Image
-        id: docker_build_proxy
-        uses: docker/build-push-action@v2
-        with:
-          driver-opts: image=moby/buildkit:0.9.1
-          file: ./config/docker/nginx.Dockerfile
-          cache-from: type=registry,ref=rgolea/baneverywhere-proxy:latest
-          cache-to: type=inline
-          push: true
-          tags: rgolea/baneverywhere-proxy:latest
-          context: .
+          # context: .
+      # - name: Build and push Proxy Image
+      #   id: docker_build_proxy
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     driver-opts: image=moby/buildkit:0.9.1
+      #     file: ./config/docker/nginx.Dockerfile
+      #     cache-from: type=registry,ref=rgolea/baneverywhere-proxy:latest
+      #     cache-to: type=inline
+      #     push: true
+      #     tags: rgolea/baneverywhere-proxy:latest
+      #     context: .
 
   agents:
     runs-on: ubuntu-latest
