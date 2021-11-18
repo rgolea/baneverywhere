@@ -1,0 +1,60 @@
+name: PR
+on:
+  pull_request:
+env:
+  NX_CLOUD_DISTRIBUTED_EXECUTION: true
+  NX_BRANCH: ${{ github.event.number || github.ref }}
+  NX_RUN_GROUP: $${{ github.run_id }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  pr:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Cache node modules
+        uses: actions/cache@v2
+        id: npm-cache
+        with:
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            **/node_modules
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16.13
+      - run: npm ci
+      - run: npx nx-cloud start-ci-run
+      - run: npx nx affected --base=remotes/origin/master --target=build --parallel --max-parallel=3
+      - run: npx nx-cloud stop-all-agents
+
+  agents:
+    runs-on: ubuntu-latest
+    name: Agent 1
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        agent: [ 1, 2, 3 ]
+    steps:
+      - name: Cache node modules
+        uses: actions/cache@v2
+        id: npm-cache
+        with:
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            **/node_modules
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16.13
+      - run: npm ci
+      - name: Start Nx Agent ${{ matrix.agent }}
+        run: npx nx-cloud start-agent
