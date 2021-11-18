@@ -25,6 +25,8 @@ jobs:
             ${{ runner.os }}-
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
+        with:
+          main-branch-name: 'master'
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
