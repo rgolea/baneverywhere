@@ -82,7 +82,7 @@ jobs:
           script: |
             cd /app
             rm -rf docker-compose.yml
-            wget https://raw.githubusercontent.com/${{ env.GITHUB_REPOSITORY }}/master/docker-compose.yml
+            wget https://raw.githubusercontent.com/rgolea/baneverywhere/master/docker-compose.yml
             docker-compose down && docker-compose up -d && docker-system prune -af
 
 
