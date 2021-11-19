@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   nginx:
-    image: baneverywhere-proxy:latest
+    image: rgolea/baneverywhere-proxy:latest
     container_name: baneverywhere-nginx
     ports:
       - "80:80"
@@ -9,7 +9,7 @@ services:
       - api
 
   api:
-    image: baneverywhere:latest
+    image: rgolea/baneverywhere:latest
     command: node apps/api/main.js
     container_name: api-baneverywhere
     stdin_open: true
@@ -17,25 +17,24 @@ services:
     restart: unless-stopped
     expose:
       - 3333
-    env:
+    environment:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_HOST=${REDIS_HOST}
       - JWT_SECRET=${JWT_SECRET}
       - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
       - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}
-
     depends_on:
       - mongodb
       - redis
 
   bot:
-    image: baneverywhere:latest
+    image: rgolea/baneverywhere:latest
     command: node apps/bot/main.js
     container_name: bot-baneverywhere
     stdin_open: true
     tty: true
     restart: unless-stopped
-    env:
+    environment:
       - BAN_BOT_USER=baneverywhere
       - TWITCH_CLIENT_ACCESS_TOKEN=${TWITCH_CLIENT_ACCESS_TOKEN}
       - REDIS_PORT=${REDIS_PORT}
@@ -44,13 +43,13 @@ services:
       - redis
 
   bot-handler:
-    image: baneverywhere:latest
+    image: rgolea/baneverywhere:latest
     command: node apps/bot-handler/main.js
     container_name: bot-handler-baneverywhere
     stdin_open: true
     tty: true
     restart: unless-stopped
-    env:
+    environment:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_HOST=${REDIS_HOST}
       - MONGODB_URI=${MONGODB_URI}
@@ -58,13 +57,13 @@ services:
       - redis
       - mongodb
   online-checker:
-    image: baneverywhere:latest
+    image: rgolea/baneverywhere:latest
     command: node apps/online-checker/main.js
     container_name: online-checker-baneverywhere
     stdin_open: true
     tty: true
     restart: unless-stopped
-    env:
+    environment:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_HOST=${REDIS_HOST}
       - MONGODB_URI=${MONGODB_URI}
@@ -73,13 +72,13 @@ services:
       - mongodb
 
   queue-processor:
-    image: baneverywhere:latest
+    image: rgolea/baneverywhere:latest
     command: node apps/queue-processor/main.js
     container_name: queue-processor-baneverywhere
     stdin_open: true
     tty: true
     restart: unless-stopped
-    env:
+    environment:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_HOST=${REDIS_HOST}
       - MONGODB_URI=${MONGODB_URI}
