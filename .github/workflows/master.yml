@@ -81,6 +81,7 @@ jobs:
           envs: REDIS_PORT,REDIS_HOST,JWT_SECRET,TWITCH_CLIENT_ID,TWITCH_CLIENT_SECRET,TWITCH_CLIENT_ACCESS_TOKEN,MONGODB_URI
           script: |
             cd /app
+            rm -rf docker-compose.yml
             wget https://raw.githubusercontent.com/${{ env.GITHUB_REPOSITORY }}/master/docker-compose.yml
             docker-compose down && docker-compose up -d && docker-system prune -af
 
