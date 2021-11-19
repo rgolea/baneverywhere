@@ -23,6 +23,8 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           path: |
             **/node_modules
+            /tmp/.buildx-cache-api
+            /tmp/.buildx-cache-proxy
           restore-keys: |
             ${{ runner.os }}-npm-
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
@@ -55,6 +57,8 @@ jobs:
           push: true
           tags: rgolea/baneverywhere:latest
           context: .
+          cache-from: type=local,src=/tmp/.buildx-cache-api
+          cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
       - name: Build and push API Image
         id: docker_build_proxy
         uses: docker/build-push-action@v2
@@ -63,6 +67,18 @@ jobs:
           push: true
           tags: rgolea/baneverywhere-proxy:latest
           context: .
+          cache-from: type=local,src=/tmp/.buildx-cache-proxy
+          cache-to: type=local,dest=/tmp/.buildx-cache-proxy-new,mode=max
+      -
+        # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+        name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache-api
+          rm -rf /tmp/.buildx-cache-proxy
+          mv /tmp/.buildx-cache-api-new /tmp/.buildx-cache-api
+          mv /tmp/.buildx-cache-proxy-new /tmp/.buildx-cache-proxy
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
@@ -83,7 +99,7 @@ jobs:
             cd /app
             rm -rf docker-compose.yml
             wget https://raw.githubusercontent.com/rgolea/baneverywhere/master/docker-compose.yml
-            docker-compose down && docker-compose up -d && docker-system prune -af
+            docker-compose down && docker-compose up -d && docker system prune -af
 
 
   agents:
