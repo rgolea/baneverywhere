@@ -83,8 +83,6 @@ services:
       test: test $$(echo "rs.initiate({_id:'my-replica-set',members:[{_id:0,host:\"mongodb:27017\"}]}).ok || rs.status().ok" | mongo --port 27017 --quiet) -eq 1
       interval: 10s
       start_period: 30s
-    # command: >
-    #   sh -c "until mongo --eval "print('connected')"; do sleep 2; done && mongo --eval "rs.initiate()""
 
   redis:
     image: redis:6.2.6

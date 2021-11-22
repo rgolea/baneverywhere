@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
     transport: Transport.REDIS,
     options: {
-      url: process.env.REDIS_URL,
+      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     }
   });
 
