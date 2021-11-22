@@ -17,12 +17,9 @@ services:
     restart: unless-stopped
     expose:
       - 3333
-    environment:
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_HOST=${REDIS_HOST}
-      - JWT_SECRET=${JWT_SECRET}
-      - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
-      - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}
+    env_file:
+      - fileName: .env
+        path: ../
     depends_on:
       - mongodb
       - redis
@@ -34,11 +31,9 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-    environment:
-      - BAN_BOT_USER=baneverywhere
-      - TWITCH_CLIENT_ACCESS_TOKEN=${TWITCH_CLIENT_ACCESS_TOKEN}
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_HOST=${REDIS_HOST}
+    env_file:
+      - fileName: .env
+        path: ../
     depends_on:
       - redis
 
@@ -49,10 +44,9 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-    environment:
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_HOST=${REDIS_HOST}
-      - MONGODB_URI=${MONGODB_URI}
+    env_file:
+      - fileName: .env
+        path: ../
     depends_on:
       - redis
       - mongodb
@@ -63,10 +57,9 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-    environment:
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_HOST=${REDIS_HOST}
-      - MONGODB_URI=${MONGODB_URI}
+    env_file:
+      - fileName: .env
+        path: ../
     depends_on:
       - redis
       - mongodb
@@ -78,10 +71,9 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-    environment:
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_HOST=${REDIS_HOST}
-      - MONGODB_URI=${MONGODB_URI}
+    env_file:
+      - fileName: .env
+        path: ../
     depends_on:
       - redis
       - mongodb
