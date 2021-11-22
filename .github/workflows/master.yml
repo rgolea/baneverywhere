@@ -38,6 +38,7 @@ jobs:
           node-version: 16.13
       - run: git fetch origin master
       - run: npm ci --ignore-scripts
+      - run: npm run generate
       - run: npx nx-cloud start-ci-run
       - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=2
       - run: npx nx-cloud stop-all-agents
