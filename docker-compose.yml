@@ -7,6 +7,9 @@ services:
       - "80:80"
     depends_on:
       - api
+    volumes:
+      - /etc/letsencrypt/live/baneverywhere.thecodez.com:/etc/letsencrypt/live/baneverywhere.thecodez.com
+      - /etc/letsencrypt/options-ssl-nginx.conf:/etc/letsencrypt/options-ssl-nginx.conf
 
   api:
     image: rgolea/baneverywhere:latest
