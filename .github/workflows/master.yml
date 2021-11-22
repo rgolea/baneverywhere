@@ -100,6 +100,7 @@ jobs:
           script: |
             cd /app
             echo $MAX_USERS_PER_BOT
+            echo {{ secrets.MAX_USERS_PER_BOT }}
             docker-compose down
             rm -rf docker-compose.yml
             wget https://raw.githubusercontent.com/rgolea/baneverywhere/master/docker-compose.yml
