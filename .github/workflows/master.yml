@@ -40,7 +40,7 @@ jobs:
       - run: npm ci
       - run: npm run generate
       - run: npx nx-cloud start-ci-run
-      - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=2
+      - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=2 --skip-nx-cache
       - run: npx nx-cloud stop-all-agents
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
