@@ -78,8 +78,8 @@ services:
     volumes:
       - /data/mongodb:/data/db
     entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
-    command: >
-      sh -c "until mongo --eval "print('connected')"; do sleep 2; done && mongo --eval "rs.initiate()""
+    # command: >
+    #   sh -c "until mongo --eval "print('connected')"; do sleep 2; done && mongo --eval "rs.initiate()""
 
   redis:
     image: redis:6.2.6
