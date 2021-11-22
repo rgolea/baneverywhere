@@ -91,7 +91,7 @@ jobs:
             cd /app
             docker-compose down
             rm -rf docker-compose.yml
-            wget https://raw.githubusercontent.com/rgolea/baneverywhere/master/docker-compose.yml?cache=$(date +%s) > docker-compose.yml
+            wget https://raw.githubusercontent.com/rgolea/baneverywhere/master/docker-compose.yml --no-cache --no-dns-cache
             docker-compose up -d
             docker system prune -af
 
