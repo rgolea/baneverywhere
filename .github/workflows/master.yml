@@ -91,10 +91,10 @@ jobs:
           script: |
             cd /app
             docker-compose down
+            docker system prune -af
             rm -rf docker-compose.yml
             wget https://raw.githubusercontent.com/rgolea/baneverywhere/master/docker-compose.yml --no-cache --no-dns-cache
             docker-compose up -d
-            docker system prune -af
 
 
   agents:

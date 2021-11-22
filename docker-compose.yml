@@ -27,7 +27,7 @@ services:
 
   bot:
     image: rgolea/baneverywhere:latest
-    command: /bin/bash
+    command: node apps/bot/main.js
     container_name: bot-baneverywhere
     stdin_open: true
     tty: true
