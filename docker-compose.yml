@@ -17,9 +17,7 @@ services:
     restart: unless-stopped
     expose:
       - 3333
-    env_file:
-      - fileName: .env
-        path: ../
+    env_file: /.env
     depends_on:
       - mongodb
       - redis
@@ -44,9 +42,7 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-    env_file:
-      - fileName: .env
-        path: ../
+    env_file: /.env
     depends_on:
       - redis
       - mongodb
@@ -57,9 +53,7 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-    env_file:
-      - fileName: .env
-        path: ../
+    env_file: /.env
     depends_on:
       - redis
       - mongodb
@@ -71,9 +65,7 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-    env_file:
-      - fileName: .env
-        path: ../
+    env_file: /.env
     depends_on:
       - redis
       - mongodb
