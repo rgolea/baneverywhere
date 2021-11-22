@@ -5,11 +5,11 @@ services:
     container_name: baneverywhere-nginx
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - api
     volumes:
-      - /etc/letsencrypt/live/baneverywhere.thecodez.com:/etc/letsencrypt/live/baneverywhere.thecodez.com
-      - /etc/letsencrypt/options-ssl-nginx.conf:/etc/letsencrypt/options-ssl-nginx.conf
+      - /etc/letsencrypt/:/etc/letsencrypt/
 
   api:
     image: rgolea/baneverywhere:latest
@@ -27,7 +27,7 @@ services:
 
   bot:
     image: rgolea/baneverywhere:latest
-    command: node apps/bot/main.js
+    command: /bin/bash
     container_name: bot-baneverywhere
     stdin_open: true
     tty: true
