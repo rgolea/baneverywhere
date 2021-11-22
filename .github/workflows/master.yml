@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: 16.13
       - run: git fetch origin master
-      - run: npm ci --ignore-scripts
+      - run: npm ci
       - run: npm run generate
       - run: npx nx-cloud start-ci-run
       - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=2
@@ -118,7 +118,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 16.13
-      - run: npm ci --ignore-scripts
+      - run: npm ci
       - name: Start Nx Agent ${{ matrix.agent }}
         run: npx nx-cloud start-agent
 
