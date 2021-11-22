@@ -29,9 +29,7 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-    env_file:
-      - fileName: .env
-        path: ../
+    env_file: /.env
     depends_on:
       - redis
 
