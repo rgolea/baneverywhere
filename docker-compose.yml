@@ -77,7 +77,7 @@ services:
     restart: unless-stopped
     volumes:
       - /data/mongodb:/data/db
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "mongodb"]
     # command: >
     #   sh -c "until mongo --eval "print('connected')"; do sleep 2; done && mongo --eval "rs.initiate()""
 
