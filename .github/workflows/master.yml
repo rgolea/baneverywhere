@@ -11,7 +11,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: production
+    environment:
+      name: production
     steps:
       # - uses: actions/checkout@v2
       #   with:
@@ -82,22 +83,23 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
-          REDIS_PORT: ${{ env.REDIS_PORT }}
-          REDIS_HOST: ${{ env.REDIS_HOST }}
-          JWT_SECRET: ${{ env.JWT_SECRET }}
-          TWITCH_CLIENT_ID: ${{ env.TWITCH_CLIENT_ID }}
-          TWITCH_CLIENT_SECRET: ${{ env.TWITCH_CLIENT_SECRET }}
-          TWITCH_CLIENT_ACCESS_TOKEN: ${{ env.TWITCH_CLIENT_ACCESS_TOKEN }}
-          MONGODB_URI: ${{ env.MONGODB_URI }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          TWITCH_CLIENT_ACCESS_TOKEN: ${{ secrets.TWITCH_CLIENT_ACCESS_TOKEN }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MAX_USERS_PER_BOT: ${{ secrets.MAX_USERS_PER_BOT }}
         with:
+          envs: REDIS_PORT,REDIS_HOST,JWT_SECRET,TWITCH_CLIENT_ID,TWITCH_CLIENT_SECRET,TWITCH_CLIENT_ACCESS_TOKEN,MONGODB_URI,MAX_USERS_PER_BOT
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
-          envs: REDIS_PORT,REDIS_HOST,JWT_SECRET,TWITCH_CLIENT_ID,TWITCH_CLIENT_SECRET,TWITCH_CLIENT_ACCESS_TOKEN,MONGODB_URI
           script: |
             cd /app
-            echo $TWITCH_CLIENT_ID
+            echo $MAX_USERS_PER_BOT
             docker-compose down
             rm -rf docker-compose.yml
             wget https://raw.githubusercontent.com/rgolea/baneverywhere/master/docker-compose.yml
