@@ -35,7 +35,7 @@ export class AppService implements OnModuleInit {
     this.checkIfUserIsOnline();
   }
 
-  async checkIfUserIsOnline(cursor?: string) {
+  async checkIfUserIsOnline(cursor?: number) {
     const users = await this.dbService.user.findMany({
       select: {
         id: true,

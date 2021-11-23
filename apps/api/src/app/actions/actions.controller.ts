@@ -42,7 +42,7 @@ export class ActionsController {
 
   @Put(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body('approved') approved: boolean,
     @TwitchProfile() { login: channelName }: TwitchUserProfile,
   ): Promise<StatusResponse<boolean>>{

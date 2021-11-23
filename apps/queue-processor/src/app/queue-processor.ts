@@ -18,7 +18,7 @@ export class QueueProcessor {
 
   private async handleBanUnban(
     action: Action,
-    job: Job<Omit<Actions, 'queueFor'> & { cursor?: string }>,
+    job: Job<Omit<Actions, 'queueFor'> & { cursor?: number }>,
     cb: DoneCallback
   ) {
     const pattern =
@@ -95,7 +95,7 @@ export class QueueProcessor {
 
   @Process(Action.BAN)
   async handleBan(
-    job: Job<Omit<Actions, 'queueFor'> & { cursor?: string }>,
+    job: Job<Omit<Actions, 'queueFor'> & { cursor?: number }>,
     cb: DoneCallback
   ) {
     this.handleBanUnban(Action.BAN, job, cb);
@@ -103,7 +103,7 @@ export class QueueProcessor {
 
   @Process(Action.UNBAN)
   async handleUnban(
-    job: Job<Omit<Actions, 'queueFor'> & { cursor?: string }>,
+    job: Job<Omit<Actions, 'queueFor'> & { cursor?: number }>,
     cb: DoneCallback
   ) {
     this.handleBanUnban(Action.UNBAN, job, cb);
@@ -111,7 +111,7 @@ export class QueueProcessor {
 
   @Process('queue')
   async handleQueue(
-    job: Job<{ username: string; cursor: string }>,
+    job: Job<{ username: string; cursor: number }>,
     cb: DoneCallback
   ) {
     const { username, cursor } = job.data;

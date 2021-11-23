@@ -11,5 +11,5 @@ export class UnloadQueue {
 
 export class SaveQueue {
   static readonly type = '[Queue] Save Queue';
-  constructor(public payload: { queueId: string; approved: boolean }) {}
+  constructor(public payload: { queueId: number; approved: boolean }) {}
 }

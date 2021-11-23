@@ -10,7 +10,7 @@ export class ActionsService {
     return this.dbService.actions.findMany(args);
   }
 
-  update(id: string, approved: boolean) {
+  update(id: number, approved: boolean) {
     return this.dbService.actions.update({
       where: { id },
       data: {

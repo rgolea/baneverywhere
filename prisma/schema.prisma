@@ -3,16 +3,15 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["mongoDb"]
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("MONGODB_URI")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id                String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  id                Int @id @default(autoincrement())
   login             String   @unique
   display_name      String   @unique
   twitchId          String   @unique
@@ -30,9 +29,9 @@ enum BanEverywhereSettings {
 }
 
 model Settings {
-  id           String                @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  id                Int @id @default(autoincrement())
   fromId       String
-  fromUsername String
+  fromUsername     String
   toId         String
   toUsername   String
   settings     BanEverywhereSettings @default(NONE)
@@ -50,7 +49,7 @@ enum Action {
 }
 
 model Actions {
-  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  id                Int @id @default(autoincrement())
   action    Action
   user      String
   streamer  String
@@ -66,7 +65,7 @@ model Actions {
 }
 
 model Channels {
-  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  id                Int @id @default(autoincrement())
   machine   String
   username  String
   createdAt DateTime @default(now())
