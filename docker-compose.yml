@@ -11,6 +11,16 @@ services:
     volumes:
       - /etc/letsencrypt/:/etc/letsencrypt/
 
+  migration:
+    image: rgolea/baneverywhere:latest
+    command: npx prisma migrate dev && tail -f /dev/null
+    container_name: baneverywhere-migration
+    tty: true
+    env_file: /.env
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
   api:
     image: rgolea/baneverywhere:latest
     command: node apps/api/main.js
@@ -24,6 +34,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - migration
 
   bot:
     image: rgolea/baneverywhere:latest
@@ -59,6 +70,7 @@ services:
     depends_on:
       - redis
       - postgres
+      - migration
 
   queue-processor:
     image: rgolea/baneverywhere:latest
@@ -71,6 +83,7 @@ services:
     depends_on:
       - redis
       - postgres
+      - migration
 
   postgres:
     image: postgres:10
