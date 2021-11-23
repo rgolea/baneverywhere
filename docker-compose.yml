@@ -13,7 +13,7 @@ services:
 
   api:
     image: rgolea/baneverywhere:latest
-    command: npx prisma migrate dev && node apps/api/main.js
+    command: node apps/api/main.js
     container_name: api-baneverywhere
     stdin_open: true
     tty: true
@@ -27,7 +27,7 @@ services:
 
   bot:
     image: rgolea/baneverywhere:latest
-    command: npx prisma migrate dev && node apps/bot/main.js
+    command: node apps/bot/main.js
     container_name: bot-baneverywhere
     stdin_open: true
     tty: true
@@ -38,7 +38,7 @@ services:
 
   bot-handler:
     image: rgolea/baneverywhere:latest
-    command: npx prisma migrate dev && node apps/bot-handler/main.js
+    command: node apps/bot-handler/main.js
     container_name: bot-handler-baneverywhere
     stdin_open: true
     tty: true
@@ -47,9 +47,10 @@ services:
     depends_on:
       - redis
       - postgres
+
   online-checker:
     image: rgolea/baneverywhere:latest
-    command: npx prisma migrate dev && node apps/online-checker/main.js
+    command: node apps/online-checker/main.js
     container_name: online-checker-baneverywhere
     stdin_open: true
     tty: true
@@ -61,7 +62,7 @@ services:
 
   queue-processor:
     image: rgolea/baneverywhere:latest
-    command: npx prisma migrate dev && node apps/queue-processor/main.js
+    command: node apps/queue-processor/main.js
     container_name: queue-processor-baneverywhere
     stdin_open: true
     tty: true
