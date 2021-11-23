@@ -86,9 +86,9 @@ services:
     container_name: mysql-baneverywhere
     hostname: mysql
     restart: unless-stopped
-    ports:
-      - "3306:3306"
-      - "33060:33060"
+    expose:
+      - 3306
+      - 33060
     environment:
       - MYSQL_DATABASE=baneverywhere
       - MYSQL_USER=root
