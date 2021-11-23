@@ -38,7 +38,7 @@ export class AppService implements OnModuleInit {
     });
 
     if(users.length === 0) return;
-
+    console.log('Finding users', users.map(u => u.login));
     const {
       data: { access_token },
     } = await lastValueFrom(
@@ -71,7 +71,8 @@ export class AppService implements OnModuleInit {
     const offlineUsers = users.filter(
       (user) => !onlineUsers.includes(user.login)
     );
-
+    console.log('Online users', onlineUsers);
+    console.log('Offline users', offlineUsers);
     onlineUsers.forEach((user) => {
       this.botHandlerClient.emit(BotPatterns.USER_ONLINE, user);
     });
