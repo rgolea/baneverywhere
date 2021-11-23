@@ -13,7 +13,7 @@ services:
 
   migration:
     image: rgolea/baneverywhere:latest
-    command: npx prisma migrate dev && tail -f /dev/null
+    command: npx prisma migrate dev || tail -f /dev/null
     container_name: baneverywhere-migration
     tty: true
     env_file: /.env
