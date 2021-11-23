@@ -21,7 +21,7 @@ services:
     depends_on:
       - postgres
     healthcheck:
-      test: ["npx", "prisma", "migrate", "dev"]
+      test: ["CMD", "npx", "prisma", "migrate", "dev"]
       interval: 1m30s
       timeout: 30s
       retries: 5
