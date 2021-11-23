@@ -13,13 +13,19 @@ services:
 
   migration:
     image: rgolea/baneverywhere:latest
-    command: npx prisma migrate dev || tail -f /dev/null
+    command: tail -f /dev/null
     container_name: baneverywhere-migration
     tty: true
     env_file: /.env
     restart: unless-stopped
     depends_on:
       - postgres
+    healthcheck:
+      test: ["npx", "prisma", "migrate", "dev"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
 
   api:
     image: rgolea/baneverywhere:latest
