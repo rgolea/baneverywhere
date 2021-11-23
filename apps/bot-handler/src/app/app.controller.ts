@@ -63,7 +63,7 @@ export class AppController {
   @MessagePattern(BotPatterns.USER_OFFLINE)
   async userOffline(channelName: string) {
     const { identifier, count } = await lastValueFrom(
-      this.botHandlerClient.send('bot:disconnect:channel', { channelName })
+      this.botHandlerClient.send(BotPatterns.BOT_DISCONNECT_CHANNEL, { channelName })
     );
     await this.appService.setOrUpdateMachineStatus(identifier, count);
     return 'OK';

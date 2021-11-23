@@ -16,6 +16,7 @@ export class AppService {
   async setOrUpdateMachineStatus(id: string, status: BotStatus) {
     await this.removeMachineStatus(id);
     this.machineStatus.set(id, status);
+    console.log('status', status);
     if(!status?.count) return;
     await this.dbService.channels.createMany({
       data: status.users.map(user => ({

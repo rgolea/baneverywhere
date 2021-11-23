@@ -7,6 +7,7 @@ export enum BotPatterns {
   BOT_GET_STATUS = 'bot:get:status', // Request the status of the bots
   BOT_STATUS_RESPONSE = 'bot:status:response', // Response from bot with the status
   BOT_CONNECT_CHANNEL = 'bot:connect:channel', // Make bot connect to a twitch channel
+  BOT_DISCONNECT_CHANNEL = 'bot:disconnect:channel', // Make bot connect to a twitch channel
   BOT_BAN_USER = 'bot:ban:user',
   BOT_UNBAN_USER = 'bot:unban:user',
   USER_ONLINE = 'user:online',
