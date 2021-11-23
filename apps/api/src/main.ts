@@ -16,6 +16,8 @@ import * as Tracing from "@sentry/tracing";
     cors: true
   });
 
+  app.setGlobalPrefix('/api')
+
   const express = app.getHttpAdapter().getInstance();
 
   Sentry.init({
