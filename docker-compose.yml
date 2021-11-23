@@ -11,10 +11,19 @@ services:
     volumes:
       - /etc/letsencrypt/:/etc/letsencrypt/
 
+  migration:
+    image: rgolea/baneverywhere:latest
+    command: npx prisma migrate dev
+    container_name: migration-baneverywhere
+    stdin_open: true
+    tty: true
+    env_file: /.env
+    depends_on:
+      - mysql
+
   api:
     image: rgolea/baneverywhere:latest
     command: node apps/api/main.js
-    entrypoint: ["npx", "prisma", "migrate up"]
     container_name: api-baneverywhere
     stdin_open: true
     tty: true
@@ -23,7 +32,7 @@ services:
       - 3333
     env_file: /.env
     depends_on:
-      - mysql
+      - migration
       - redis
 
   bot:
@@ -47,7 +56,7 @@ services:
     env_file: /.env
     depends_on:
       - redis
-      - mysql
+      - migration
   online-checker:
     image: rgolea/baneverywhere:latest
     command: node apps/online-checker/main.js
@@ -58,7 +67,7 @@ services:
     env_file: /.env
     depends_on:
       - redis
-      - mysql
+      - migration
 
   queue-processor:
     image: rgolea/baneverywhere:latest
@@ -70,7 +79,7 @@ services:
     env_file: /.env
     depends_on:
       - redis
-      - mysql
+      - migration
 
   mysql:
     image: mysql:8.0.27
@@ -78,9 +87,10 @@ services:
     hostname: mysql
     restart: unless-stopped
     environment:
+      - MYSQL_DATABASE=baneverywhere
       - MYSQL_USER=root
       - MYSQL_PASSWORD=pass
-      - MYSQL_DATABASE=baneverywhere
+      - MYSQL_RANDOM_ROOT_PASSWORD='1'
     volumes:
       - /data/mysql:/var/lib/mysql
     healthcheck:
