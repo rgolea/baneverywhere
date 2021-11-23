@@ -28,6 +28,12 @@ export class AppService {
 
   async removeMachineStatus(id: string){
     this.machineStatus.delete(id);
+    const count = await this.dbService.channels.count({
+      where: {
+        machine: id,
+      }
+    });
+    if(!count) return;
     await this.dbService.channels.deleteMany({
       where: {
         machine: id

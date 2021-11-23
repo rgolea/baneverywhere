@@ -9,6 +9,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { Actions } from '@prisma/client';
 import { channelToUsername } from './utils';
+import { PingCommand } from './commands/ping-command';
 
 @Injectable()
 export class BotClientService implements OnModuleInit {
@@ -21,6 +22,7 @@ export class BotClientService implements OnModuleInit {
     const commander = new Commander(this.client);
     commander.registerCommand('!ban*', new BanCommand(this.queue));
     commander.registerCommand('!unban*', new UnbanCommand(this.queue));
+    commander.registerCommand('!ping*', new PingCommand());
   }
 
   async joinChannel(channel: string) {
