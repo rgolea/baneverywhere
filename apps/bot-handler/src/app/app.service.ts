@@ -16,7 +16,6 @@ export class AppService {
   async setOrUpdateMachineStatus(id: string, status: BotStatus) {
     await this.removeMachineStatus(id);
     this.machineStatus.set(id, status);
-    console.log('status', status);
     if(!status?.count) return;
     await this.dbService.channels.createMany({
       data: status.users.map(user => ({
@@ -51,10 +50,11 @@ export class AppService {
       .filter((state) => (state[1]?.count || 0) < MAX_USERS_PER_BOT)
       .reduce((a, b) => (a[1]?.count < b[1]?.count ? a : b), []);
 
+    if (!machine) return;
     const id = machine[0];
-    if(!id) return;
+    if(!id || !machine[1]) return;
 
-    const users = machine[1].users;
+    const users = machine[1]?.users;
     this.setOrUpdateMachineStatus(id, {
       users: [...users, `#${user}`],
       count: users.length + 1,
