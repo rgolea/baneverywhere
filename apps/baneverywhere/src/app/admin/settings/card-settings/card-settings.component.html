@@ -47,31 +47,17 @@
 <swal
   #followSettings
   icon="info"
+  [title]="'Your settings for ' + (profile$ | async)?.display_name"
+  text="Please select how you want to receive the ban requests from this streamer."
   [showCancelButton]="true"
   [focusConfirm]="true"
   [focusCancel]="false"
   (didClose)="resetSettingsStore()"
-  (confirm)="saveSettings(selectedSettings)"
+  (confirm)="saveSettings($event)"
   [focusCancel]="true"
->
-  <pre *swalPortal="swalTargets.content">
-    <div
-        class="w-full md:w-6/12 lg:w-3/12 lg:mb-0 mb-12 px-4 p-1"
-        *ngIf="(profile$ | async); let profile"
-      >
-        <div class="px-6">
-          <img
-            alt="..."
-            [src]="profile.profile_image_url"
-            class="shadow-lg rounded-full mx-auto max-w-120-px"
-          />
-        </div>
-        {{ profile.display_name }}
-        <form>
-          <select [formControl]="selectedSettings">
-            <option *ngFor="let obj of settingsOptions | keyvalue" [value]="obj.value">{{obj.key}}</option>
-          </select>
-        </form>
-      </div>
-  </pre>
-</swal>
+  [swalOptions]="{
+    input: 'select',
+    inputOptions: settingsOptions,
+    inputValue: (settings$ | async)
+  }"
+></swal>
