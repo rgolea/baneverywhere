@@ -2,7 +2,7 @@ import { BotStatus } from '@baneverywhere/bot-interfaces';
 import { BotDatabaseService } from '@baneverywhere/db';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { logError } from "@baneverywhere/error-handler";
+import { logError } from '@baneverywhere/error-handler';
 
 @Injectable()
 export class AppService {
@@ -12,39 +12,38 @@ export class AppService {
   ) {}
 
   private readonly machineStatus = new Map<string, BotStatus>();
-  private readonly userByMachine = new Map<string, string>();
 
   @logError()
   async setOrUpdateMachineStatus(id: string, status: BotStatus) {
     await this.removeMachineStatus(id);
     this.machineStatus.set(id, status);
-    if(!status?.count) return;
+    if (!status?.count) return;
     await this.dbService.channels.deleteMany({
       where: {
-        machine: id
-      }
-    })
+        machine: id,
+      },
+    });
     await this.dbService.channels.createMany({
-      data: status.users.map(user => ({
+      data: status.users.map((user) => ({
         machine: id,
         username: user,
-      }))
+      })),
     });
   }
 
   @logError()
-  async removeMachineStatus(id: string){
+  async removeMachineStatus(id: string) {
     this.machineStatus.delete(id);
     const count = await this.dbService.channels.count({
       where: {
         machine: id,
-      }
+      },
     });
-    if(!count) return;
+    if (!count) return;
     await this.dbService.channels.deleteMany({
       where: {
-        machine: id
-      }
+        machine: id,
+      },
     });
   }
 
@@ -52,15 +51,19 @@ export class AppService {
     const MAX_USERS_PER_BOT =
       parseInt(this.configService.get<string>('MAX_USERS_PER_BOT')) || 1000;
 
-    const alreadyAssigned = this.userByMachine.has(`#${user}`);
-    if (alreadyAssigned) return;
+    const count = await this.dbService.channels.count({
+      where: {
+        username: `#${user}`,
+      },
+    });
+    if (count) return;
     const machine = [...this.machineStatus]
       .filter((state) => (state[1]?.count || 0) < MAX_USERS_PER_BOT)
       .reduce((a, b) => (a[1]?.count < b[1]?.count ? a : b), []);
 
     if (!machine) return;
     const id = machine[0];
-    if(!id || !machine[1]) return;
+    if (!id || !machine[1]) return;
 
     const users = machine[1]?.users;
     this.setOrUpdateMachineStatus(id, {
