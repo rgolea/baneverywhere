@@ -5,6 +5,7 @@ import { TwitchClientService } from './twitch-client.service';
 import {  twitchClientAccessTokenFactory } from './twitch-client-access-token.factory';
 import { TwitchClientOptions, TwitchClientOptionsProviderFactory } from './twitch-client.options';
 import { generateOptionsProvider } from './twitch-client-module.generators';
+import { logError } from "@baneverywhere/error-handler";
 
 
 function generateModule(
@@ -32,11 +33,13 @@ function generateModule(
   providers: [TwitchClientService]
 })
 export class TwitchClientModule {
+  @logError()
   static forRoot(opts: TwitchClientOptions): DynamicModule {
     const optionsProvider = generateOptionsProvider(opts);
     return generateModule(optionsProvider);
   }
 
+  @logError()
   static forRootAsync(opts: TwitchClientOptionsProviderFactory){
     const optionsProvider = generateOptionsProvider(opts);
     return generateModule(optionsProvider, opts.inject);

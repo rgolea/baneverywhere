@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from "../../users/users.service";
+import { logError } from "@baneverywhere/error-handler";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -17,6 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
+  @logError()
   async validate(payload: { twitchId: string, username: string }) {
     return this.usersService.findOneByTwitchId(payload.twitchId);
   }

@@ -3,6 +3,7 @@ import {
   TwitchUserProfile,
   TwitchUserSettings,
 } from '@baneverywhere/api-interfaces';
+import { logError } from '@baneverywhere/error-handler';
 import { Body, Controller, Get, HttpStatus, Param, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TwitchProfile } from '../core/strategies/twitch-profile';
@@ -12,7 +13,9 @@ import { SettingsService } from './settings.service';
 @Controller('settings')
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
+
   @Get(':id')
+  @logError()
   async getSettings(
     @Param('id') fromId: string,
     @TwitchProfile() { twitchId: toId, login: toUsername }: TwitchUserProfile
@@ -33,6 +36,7 @@ export class SettingsController {
   }
 
   @Put(':id')
+  @logError()
   async updateSettings(
     @Param('id') fromId: string,
     @TwitchProfile() { twitchId: toId, login: toUsername }: TwitchUserProfile,

@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { Omit } from 'utility-types';
 import { Settings, BanEverywhereSettings } from '@prisma/client';
 import { TwitchClientService } from "@baneverywhere/twitch-client";
+import { logError } from "@baneverywhere/error-handler";
 
 @Injectable()
 export class SettingsService {
@@ -12,6 +13,7 @@ export class SettingsService {
     private readonly twitchClientService: TwitchClientService,
   ) {}
 
+  @logError()
   async findOneOrCreateSettings({
     fromId,
     toId,
@@ -41,6 +43,7 @@ export class SettingsService {
     return settings;
   }
 
+  @logError()
   async createOrUpdateSettings(config: TwitchUserSettings & { toUsername: string }): Promise<Settings> {
     const fromUsername = await this.twitchClientService.findUsername(config.fromId);
     return await this.dbService.settings.upsert({

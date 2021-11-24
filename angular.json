@@ -343,6 +343,29 @@
       },
       "tags": []
     },
+    "error-handler": {
+      "root": "libs/error-handler",
+      "sourceRoot": "libs/error-handler/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/error-handler/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/error-handler"],
+          "options": {
+            "jestConfig": "libs/error-handler/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "tags": []
+    },
     "namespaces": {
       "root": "libs/namespaces",
       "sourceRoot": "libs/namespaces/src",

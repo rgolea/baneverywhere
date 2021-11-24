@@ -10,6 +10,7 @@ import { TwitchUserProfile } from '@baneverywhere/api-interfaces';
 import { TwitchProfile } from '../core/strategies/twitch-profile';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { logError } from '@baneverywhere/error-handler';
 
 @Controller('auth')
 export class AuthController {
@@ -20,6 +21,7 @@ export class AuthController {
 
   @Get('/twitch')
   @UseGuards(AuthGuard('twitch'))
+  @logError()
   async twitchProfile(
     @TwitchProfile() profile: TwitchUserProfile,
     @Res() res

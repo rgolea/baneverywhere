@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { TwitchClientOptions } from './twitch-client.options';
 import { TWITCH_CLIENT_ACCESS_TOKEN, TWITCH_CLIENT_OPTS } from './twitch-client.token';
+import { logError } from "@baneverywhere/error-handler";
 
 @Injectable()
 export class TwitchClientService {
@@ -12,6 +13,7 @@ export class TwitchClientService {
     private readonly http: HttpService,
   ) {}
 
+  @logError()
   public async findUsername(id: string){
     const { data } = await lastValueFrom(
       this.http.get<{data: Array<{ login: string }>}>(

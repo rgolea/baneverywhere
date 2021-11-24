@@ -7,6 +7,7 @@ import { TwitchUserProfile, StatusResponse } from '@baneverywhere/api-interfaces
 import { AuthGuard } from '@nestjs/passport';
 import { InjectQueue } from "@nestjs/bull";
 import { Queue } from "bull";
+import { logError } from '@baneverywhere/error-handler';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('actions')
@@ -17,6 +18,7 @@ export class ActionsController {
   ) {}
 
   @Get()
+  @logError()
   findAll(
     @TwitchProfile() { login: toUsername }: TwitchUserProfile,
     @Query('type') action?: Action,
@@ -41,6 +43,7 @@ export class ActionsController {
   }
 
   @Put(':id')
+  @logError()
   async update(
     @Param('id') id: number,
     @Body('approved') approved: boolean,

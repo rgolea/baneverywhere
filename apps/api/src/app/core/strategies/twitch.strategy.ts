@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import * as TwitchTokenStrategy from "passport-twitch-token";
 import { TwitchUserProfile } from "@baneverywhere/api-interfaces";
+import { logError } from "@baneverywhere/error-handler";
 
 @Injectable()
 export class TwitchStrategy extends PassportStrategy(
@@ -21,6 +22,7 @@ export class TwitchStrategy extends PassportStrategy(
     });
   }
 
+  @logError()
   async validate(_: unknown, __: unknown, data: { _raw: string } = { _raw: '{}'}): Promise<TwitchUserProfile> {
     const parsed = JSON.parse(data._raw);
     const { id: twitchId, login, profile_image_url, display_name } = parsed?.data?.[0] || {};
