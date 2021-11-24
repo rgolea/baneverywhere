@@ -1,4 +1,4 @@
-import { Module, Global, DynamicModule, Provider } from '@nestjs/common';
+import { Module, Global, DynamicModule, Provider, Scope } from '@nestjs/common';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { TWITCH_CLIENT_ACCESS_TOKEN, TWITCH_CLIENT_OPTS } from './twitch-client.token';
 import { TwitchClientService } from './twitch-client.service';
@@ -21,8 +21,9 @@ function generateModule(
       {
         provide: TWITCH_CLIENT_ACCESS_TOKEN,
         useFactory: twitchClientAccessTokenFactory,
-        inject: [HttpService, TWITCH_CLIENT_OPTS]
-      }
+        inject: [HttpService, TWITCH_CLIENT_OPTS],
+        scope: Scope.REQUEST
+      } as Provider,
     ]
   };
 }
