@@ -2,6 +2,7 @@ import { BotStatus } from '@baneverywhere/bot-interfaces';
 import { BotDatabaseService } from '@baneverywhere/db';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { logError } from "@baneverywhere/error-handler";
 
 @Injectable()
 export class AppService {
@@ -13,10 +14,16 @@ export class AppService {
   private readonly machineStatus = new Map<string, BotStatus>();
   private readonly userByMachine = new Map<string, string>();
 
+  @logError()
   async setOrUpdateMachineStatus(id: string, status: BotStatus) {
     await this.removeMachineStatus(id);
     this.machineStatus.set(id, status);
     if(!status?.count) return;
+    await this.dbService.channels.deleteMany({
+      where: {
+        machine: id
+      }
+    })
     await this.dbService.channels.createMany({
       data: status.users.map(user => ({
         machine: id,
@@ -25,6 +32,7 @@ export class AppService {
     });
   }
 
+  @logError()
   async removeMachineStatus(id: string){
     this.machineStatus.delete(id);
     const count = await this.dbService.channels.count({

@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BotPatterns } from '@baneverywhere/bot-interfaces';
 import { BotDatabaseModule, BotDatabaseService } from '@baneverywhere/db';
 import { BullModule } from '@nestjs/bull';
+import { logError } from '@baneverywhere/error-handler';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ export class AppModule implements OnApplicationBootstrap {
     private readonly dbService: BotDatabaseService
   ) {}
 
+  @logError()
   async onApplicationBootstrap() {
     await this.dbService.channels.deleteMany({});
     setTimeout(() => {

@@ -14,7 +14,7 @@ import {
 } from '@baneverywhere/bot-interfaces';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { Actions } from '@prisma/client';
+import { logError } from '@baneverywhere/error-handler';
 
 @Controller()
 export class AppController {
@@ -25,6 +25,7 @@ export class AppController {
   ) {}
 
   @MessagePattern('bot.identifier.created')
+  @logError()
   async botIdentifierCreated(id: string) {
     await this.appService.setOrUpdateMachineStatus(id, {
       count: 0,
@@ -33,16 +34,19 @@ export class AppController {
   }
 
   @MessagePattern('bot.identifier.destroyed')
+  @logError()
   async botIdentifierDestroyed(id: string) {
     await this.appService.removeMachineStatus(id);
   }
 
   @MessagePattern(BotPatterns.BOT_STATUS_RESPONSE)
+  @logError()
   async botStatus({ identifier, status }: BotGetStatusResponse) {
     await this.appService.setOrUpdateMachineStatus(identifier, status);
   }
 
   @EventPattern(BotPatterns.USER_ONLINE)
+  @logError()
   async userOnline(channelName: string) {
 
     const botId =
@@ -60,6 +64,7 @@ export class AppController {
   }
 
   @MessagePattern(BotPatterns.USER_OFFLINE)
+  @logError()
   async userOffline(channelName: string) {
     const { identifier, count } = await lastValueFrom(
       this.botHandlerClient.send(BotPatterns.BOT_DISCONNECT_CHANNEL, { channelName })
