@@ -21,8 +21,8 @@ services:
       - postgres
 
   api:
-    image: rgolea/baneverywhere:latest
-    command: node apps/api/main.js
+    image: rgolea/baneverywhere-api:latest
+    command: node main.js
     container_name: api-baneverywhere
     stdin_open: true
     tty: true
@@ -36,8 +36,8 @@ services:
       - migration
 
   bot:
-    image: rgolea/baneverywhere:latest
-    command: node apps/bot/main.js
+    image: rgolea/baneverywhere-bot:latest
+    command: node main.js
     container_name: bot-baneverywhere
     stdin_open: true
     tty: true
@@ -47,8 +47,8 @@ services:
       - redis
 
   bot-handler:
-    image: rgolea/baneverywhere:latest
-    command: node apps/bot-handler/main.js
+    image: rgolea/baneverywhere-bot-handler:latest
+    command: node main.js
     container_name: bot-handler-baneverywhere
     stdin_open: true
     tty: true
@@ -59,8 +59,8 @@ services:
       - postgres
 
   online-checker:
-    image: rgolea/baneverywhere:latest
-    command: node apps/online-checker/main.js
+    image: rgolea/baneverywhere-online-checker:latest
+    command: node main.js
     container_name: online-checker-baneverywhere
     stdin_open: true
     tty: true
@@ -72,8 +72,8 @@ services:
       - migration
 
   queue-processor:
-    image: rgolea/baneverywhere:latest
-    command: node apps/queue-processor/main.js
+    image: rgolea/baneverywhere-queue-processor:latest
+    command: node main.js
     container_name: queue-processor-baneverywhere
     stdin_open: true
     tty: true

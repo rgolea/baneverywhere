@@ -57,11 +57,61 @@ jobs:
         with:
           file: ./config/docker/api.Dockerfile
           push: true
+          tags: rgolea/baneverywhere-api:latest
+          context: .
+          cache-from: type=local,src=/tmp/.buildx-cache-api
+          cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
+      - name: Build and push Bot Handler Image
+        id: docker_build_bot_handler
+        uses: docker/build-push-action@v2
+        with:
+          file: ./config/docker/bot-handler.Dockerfile
+          push: true
+          tags: rgolea/baneverywhere-bot-handler:latest
+          context: .
+          cache-from: type=local,src=/tmp/.buildx-cache-api
+          cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
+      - name: Build and push Migration Image
+        id: docker_build_bot_handler
+        uses: docker/build-push-action@v2
+        with:
+          file: ./config/docker/migration.Dockerfile
+          push: true
           tags: rgolea/baneverywhere:latest
           context: .
           cache-from: type=local,src=/tmp/.buildx-cache-api
           cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
-      - name: Build and push API Image
+      - name: Build and push Online Checker Image
+        id: docker_build_bot_handler
+        uses: docker/build-push-action@v2
+        with:
+          file: ./config/docker/online-checker.Dockerfile
+          push: true
+          tags: rgolea/baneverywhere-online-checker:latest
+          context: .
+          cache-from: type=local,src=/tmp/.buildx-cache-api
+          cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
+      - name: Build and push Queue Processor Image
+        id: docker_build_bot_handler
+        uses: docker/build-push-action@v2
+        with:
+          file: ./config/docker/queue-processor.Dockerfile
+          push: true
+          tags: rgolea/baneverywhere-queue-processor:latest
+          context: .
+          cache-from: type=local,src=/tmp/.buildx-cache-api
+          cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
+      - name: Build and push Migration Image
+        id: docker_build_bot_handler
+        uses: docker/build-push-action@v2
+        with:
+          file: ./config/docker/bot.Dockerfile
+          push: true
+          tags: rgolea/baneverywhere-bot:latest
+          context: .
+          cache-from: type=local,src=/tmp/.buildx-cache-api
+          cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
+      - name: Build and push Proxy Image
         id: docker_build_proxy
         uses: docker/build-push-action@v2
         with:
