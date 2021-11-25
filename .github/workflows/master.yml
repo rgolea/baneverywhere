@@ -72,7 +72,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache-api
           cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
       - name: Build and push Migration Image
-        id: docker_build_bot_handler
+        id: docker_build_migration
         uses: docker/build-push-action@v2
         with:
           file: ./config/docker/migration.Dockerfile
@@ -82,7 +82,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache-api
           cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
       - name: Build and push Online Checker Image
-        id: docker_build_bot_handler
+        id: docker_build_online_checker
         uses: docker/build-push-action@v2
         with:
           file: ./config/docker/online-checker.Dockerfile
@@ -92,7 +92,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache-api
           cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
       - name: Build and push Queue Processor Image
-        id: docker_build_bot_handler
+        id: docker_build_queue_processor
         uses: docker/build-push-action@v2
         with:
           file: ./config/docker/queue-processor.Dockerfile
@@ -101,8 +101,8 @@ jobs:
           context: .
           cache-from: type=local,src=/tmp/.buildx-cache-api
           cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
-      - name: Build and push Migration Image
-        id: docker_build_bot_handler
+      - name: Build and push Bot Image
+        id: docker_build_bot
         uses: docker/build-push-action@v2
         with:
           file: ./config/docker/bot.Dockerfile
