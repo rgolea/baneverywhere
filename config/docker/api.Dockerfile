@@ -4,5 +4,5 @@ WORKDIR /app
 COPY dist/apps/api /app
 COPY prisma/ app/
 
-RUN npx prisma generate
+RUN ./node_modules/.bin/prisma generate
 RUN npm install
