@@ -4,5 +4,5 @@ WORKDIR /app
 COPY dist/apps/bot-handler /app
 COPY prisma/ app/
 
-RUN ./node_modules/.bin/prisma generate
 RUN npm install
+RUN ./node_modules/.bin/prisma generate
