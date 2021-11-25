@@ -3,4 +3,5 @@ WORKDIR /app
 
 COPY dist/apps/bot-handler /app
 
+RUN npx prisma generate
 RUN npm install

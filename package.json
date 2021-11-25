@@ -82,6 +82,7 @@
     "tslib": "^2.0.0",
     "utility-types": "^3.10.0",
     "uuid": "^8.3.2",
+    "prisma": "^3.5.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
@@ -120,7 +121,6 @@
     "jest": "27.2.3",
     "jest-preset-angular": "10.0.1",
     "prettier": "2.4.1",
-    "prisma": "^3.5.0",
     "rxjs-compat": "6.6.7",
     "ts-jest": "27.0.5",
     "ts-node": "~9.1.1",

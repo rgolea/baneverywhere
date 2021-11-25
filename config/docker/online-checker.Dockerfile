@@ -3,4 +3,5 @@ WORKDIR /app
 
 COPY dist/apps/online-checker /app
 
+RUN npx prisma generate
 RUN npm install
