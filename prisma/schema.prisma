@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -11,13 +11,16 @@ datasource db {
 }
 
 model User {
-  id                Int @id @default(autoincrement())
+  id                Int      @id @default(autoincrement())
   login             String   @unique
   display_name      String   @unique
   twitchId          String   @unique
   profile_image_url String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  machineUUID String?
+  machine     Machine?   @relation("UsersOnMachine", fields: [machineUUID], references: [uuid])
 
   @@map("users")
 }
@@ -29,9 +32,9 @@ enum BanEverywhereSettings {
 }
 
 model Settings {
-  id                Int @id @default(autoincrement())
+  id           Int                   @id @default(autoincrement())
   fromId       String
-  fromUsername     String
+  fromUsername String
   toId         String
   toUsername   String
   settings     BanEverywhereSettings @default(NONE)
@@ -49,7 +52,7 @@ enum Action {
 }
 
 model Actions {
-  id                Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   action    Action
   user      String
   streamer  String
@@ -58,20 +61,19 @@ model Actions {
   queueFor  String
   inQueue   Boolean? @default(false)
   approved  Boolean?
+  processed Boolean? @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("actions")
 }
 
-model Channels {
-  id                Int @id @default(autoincrement())
-  machine   String
-  username  String
+model Machine {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([username])
-  @@unique([machine, username])
-  @@map("channels")
+  users User[] @relation("UsersOnMachine")
+  @@map("machines")
 }

@@ -9,6 +9,8 @@ import { BotClientModule } from './bot-client/bot-client.module';
 import { environment } from '../environments/environment';
 import { BullModule } from '@nestjs/bull';
 import { BotClientService } from './bot-client/bot-client.service';
+import { BotDatabaseModule, BotDatabaseService } from '@baneverywhere/db';
+import { logError } from '@baneverywhere/error-handler';
 
 @Module({
   imports: [
@@ -19,8 +21,11 @@ import { BotClientService } from './bot-client/bot-client.service';
         useFactory: async (config: ConfigService) => ({
           transport: Transport.REDIS,
           options: {
-            url: `redis://${config.get('REDIS_HOST', 'localhost')}:${config.get('REDIS_PORT', 6379)}`,
-          }
+            url: `redis://${config.get('REDIS_HOST', 'localhost')}:${config.get(
+              'REDIS_PORT',
+              6379
+            )}`,
+          },
         }),
         inject: [ConfigService],
         name: BOT_HANDLER_CONNECTION,
@@ -50,6 +55,7 @@ import { BotClientService } from './bot-client/bot-client.service';
         }),
       ],
     }),
+    BotDatabaseModule,
   ],
   providers: [
     {
@@ -63,16 +69,34 @@ export class AppModule implements OnModuleInit, OnModuleDestroy {
   constructor(
     @Inject(BOT_IDENTIFIER) private readonly botIdentifier: string,
     @Inject(BOT_HANDLER_CONNECTION)
-    private readonly botHandlerClient: ClientProxy,
     private readonly botService: BotClientService,
+    private readonly dbService: BotDatabaseService
   ) {}
 
-  onModuleInit() {
-    this.botHandlerClient.emit('bot.identifier.created', this.botIdentifier);
+  @logError()
+  async onModuleInit() {
+    await this.dbService.machine.create({
+      data: {
+        uuid: this.botIdentifier,
+      },
+    });
   }
 
-  onModuleDestroy() {
-    this.botHandlerClient.emit('bot.identifier.destroyed', this.botIdentifier);
+  @logError()
+  async onModuleDestroy() {
     this.botService.sendToAll('Restarting service');
+    await this.dbService.user.updateMany({
+      where: {
+        machineUUID: this.botIdentifier,
+      },
+      data: {
+        machineUUID: null,
+      },
+    });
+    await this.dbService.machine.delete({
+      where: {
+        uuid: this.botIdentifier,
+      },
+    });
   }
 }

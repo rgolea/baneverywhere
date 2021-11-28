@@ -2,11 +2,12 @@ import { BotDatabaseService } from '@baneverywhere/db';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Inject } from '@nestjs/common';
 import { Action, BanEverywhereSettings } from '@prisma/client';
-import { DoneCallback, Job, Queue } from 'bull';
+import { Job, Queue } from 'bull';
 import { Actions } from '@prisma/client';
 import { BOT_CONNECTION } from '@baneverywhere/namespaces';
 import { ClientProxy } from '@nestjs/microservices';
 import { BotPatterns } from '@baneverywhere/bot-interfaces';
+import { logError } from '@baneverywhere/error-handler';
 
 @Processor('queue')
 export class QueueProcessor {
@@ -16,10 +17,10 @@ export class QueueProcessor {
     @Inject(BOT_CONNECTION) private readonly botHandlerClient: ClientProxy
   ) {}
 
-  private async handleBanUnban(
+  @logError()
+  public async handleBanUnban(
     action: Action,
-    job: Job<Omit<Actions, 'queueFor'> & { cursor?: number }>,
-    cb: DoneCallback
+    job: Job<Omit<Actions, 'queueFor'> & { cursor?: number }>
   ) {
     const pattern =
       action === Action.BAN
@@ -27,6 +28,7 @@ export class QueueProcessor {
         : BotPatterns.BOT_UNBAN_USER;
 
     const { cursor, ...data } = job.data;
+
     const settings = await this.dbService.settings.findMany({
       where: {
         fromUsername: data.streamer.substr(1),
@@ -36,48 +38,39 @@ export class QueueProcessor {
       ...(cursor ? { cursor: { id: cursor } } : null),
     });
 
-    const { automatic, queue } = settings.reduce(
-      (prev, curr) => {
-        if (curr.settings === BanEverywhereSettings.AUTOMATIC) {
-          prev.automatic.push(curr.toUsername);
-        } else if (curr.settings === BanEverywhereSettings.WITH_VALIDATION) {
-          prev.queue.push(curr.toUsername);
-        }
-        return prev;
+    const users = await this.dbService.user.findMany({
+      where: {
+        login: {
+          in: settings.map((setting) => setting.toUsername),
+        },
       },
-      { automatic: [], queue: [] }
-    );
+      select: {
+        login: true,
+        machineUUID: true,
+      },
+    });
 
     await Promise.all(
-      automatic.map(async (username) => {
-        const channel = await this.dbService.channels.findUnique({
-          where: {
-            username,
-          },
-        });
-        if (channel) {
+      settings.map(async (setting) => {
+        const user = users.find((u) => u.login === setting.toUsername);
+        const preapproved = Boolean(
+          setting.settings === BanEverywhereSettings.AUTOMATIC &&
+            user?.machineUUID
+        );
+        if (preapproved) {
           this.botHandlerClient.emit(pattern, {
-            queueFor: username,
+            queueFor: setting.toUsername,
             ...data,
-          } as Actions);
-        } else {
-          await this.dbService.actions.create({
-            data: {
-              queueFor: username,
-              inQueue: true,
-              ...data,
-            },
           });
         }
-      })
-    );
 
-    await Promise.all(
-      queue.map((username) => {
-        return this.dbService.actions.create({
+        await this.dbService.actions.create({
           data: {
-            queueFor: username,
             ...data,
+            queueFor: setting.toUsername,
+            inQueue: true,
+            approved: preapproved,
+            processed: preapproved,
           },
         });
       })
@@ -90,50 +83,36 @@ export class QueueProcessor {
       });
     }
 
-    cb();
+    return;
   }
 
   @Process(Action.BAN)
-  async handleBan(
-    job: Job<Omit<Actions, 'queueFor'> & { cursor?: number }>,
-    cb: DoneCallback
-  ) {
-    this.handleBanUnban(Action.BAN, job, cb);
+  @logError()
+  async handleBan(job: Job<Omit<Actions, 'queueFor'> & { cursor?: number }>) {
+    return await this.handleBanUnban(Action.BAN, job);
   }
 
   @Process(Action.UNBAN)
-  async handleUnban(
-    job: Job<Omit<Actions, 'queueFor'> & { cursor?: number }>,
-    cb: DoneCallback
-  ) {
-    this.handleBanUnban(Action.UNBAN, job, cb);
+  @logError()
+  async handleUnban(job: Job<Omit<Actions, 'queueFor'> & { cursor?: number }>) {
+    return await this.handleBanUnban(Action.UNBAN, job);
   }
 
   @Process('queue')
-  async handleQueue(
-    job: Job<{ username: string; cursor: number }>,
-    cb: DoneCallback
-  ) {
+  @logError()
+  async handleQueue(job: Job<{ username: string; cursor?: number }>) {
     const { username, cursor } = job.data;
-    const userOnline = await this.dbService.channels.count({
+    const user = await this.dbService.user.findUnique({
       where: {
-        username: username,
-      }
+        login: username,
+      },
     });
-    if (!cursor) {
-      await this.dbService.actions.deleteMany({
-        where: {
-          queueFor: username,
-          inQueue: true,
-          approved: false,
-        },
-      });
-    }
 
     const actions = await this.dbService.actions.findMany({
       where: {
         queueFor: username,
         inQueue: true,
+        processed: false,
       },
       take: 50,
       skip: cursor ? 1 : 0,
@@ -147,7 +126,7 @@ export class QueueProcessor {
       });
     }
 
-    actions.map((action) => {
+    actions.forEach((action) => {
       const pattern =
         action.action === Action.BAN
           ? BotPatterns.BOT_BAN_USER
@@ -155,16 +134,21 @@ export class QueueProcessor {
       this.botHandlerClient.emit(pattern, action);
     });
 
-    if(userOnline) {
-      await this.dbService.actions.deleteMany({
-        where: {
-          id: {
-            in: actions.map((action) => action.id),
-          }
-        }
-      }).catch(err => console.log(err));
+    if (user.machineUUID) {
+      return await this.dbService.actions
+        .updateMany({
+          where: {
+            id: {
+              in: actions.map((action) => action.id),
+            },
+          },
+          data: {
+            processed: true,
+          },
+        })
+        .catch((err) => console.log(err));
+    } else {
+      return;
     }
-
-    cb();
   }
 }

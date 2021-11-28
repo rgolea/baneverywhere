@@ -1,12 +1,10 @@
 import { Controller, Inject } from '@nestjs/common';
 import {
-  ClientProxy,
   EventPattern,
   MessagePattern,
 } from '@nestjs/microservices';
 import { BotClientService } from './bot-client/bot-client.service';
 import { BOT_IDENTIFIER } from './bot.identifier';
-import { BOT_HANDLER_CONNECTION } from '@baneverywhere/namespaces';
 import {
   BotConnectChannelParams,
   BotConnectChannelResponse,
@@ -17,28 +15,13 @@ import {
   BotPatterns,
 } from '@baneverywhere/bot-interfaces';
 import { Actions } from '@prisma/client';
-import { channelToUsername } from './bot-client/utils';
-import { Observable } from 'rxjs';
 
 @Controller('app')
 export class AppController {
   constructor(
     @Inject(BOT_IDENTIFIER) private readonly botIdentifier: string,
-    private readonly botClientService: BotClientService,
-    @Inject(BOT_HANDLER_CONNECTION)
-    private readonly botHandlerConnection: ClientProxy
+    private readonly botClientService: BotClientService
   ) {}
-
-  @EventPattern(BotPatterns.BOT_GET_STATUS)
-  getStatus() {
-    this.botHandlerConnection.emit<void, BotGetStatusResponse>(
-      BotPatterns.BOT_STATUS_RESPONSE,
-      {
-        identifier: this.botIdentifier,
-        status: this.botClientService.getStatus(),
-      }
-    );
-  }
 
   @MessagePattern(BotPatterns.BOT_CONNECT_CHANNEL)
   connectToChannel({

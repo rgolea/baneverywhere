@@ -1,4 +1,3 @@
-import { BotStatus } from '@baneverywhere/bot-interfaces';
 import { BotDatabaseService } from '@baneverywhere/db';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -11,65 +10,51 @@ export class AppService {
     private readonly dbService: BotDatabaseService
   ) {}
 
-  private readonly machineStatus = new Map<string, BotStatus>();
-
   @logError()
-  async setOrUpdateMachineStatus(id: string, status: BotStatus) {
-    await this.removeMachineStatus(id);
-    this.machineStatus.set(id, status);
-    if (!status?.count) return;
-    await this.dbService.channels.deleteMany({
-      where: {
-        machine: id,
+  async preassignMachineToUser(username: string): Promise<string> {
+    const user = await this.dbService.user.findUnique({
+      select: {
+        machineUUID: true,
       },
+      where: {
+        login: username,
+      }
     });
-    await this.dbService.channels.createMany({
-      data: status.users.map((user) => ({
-        machine: id,
-        username: user,
-      })),
-    });
-  }
 
-  @logError()
-  async removeMachineStatus(id: string) {
-    this.machineStatus.delete(id);
-    const count = await this.dbService.channels.count({
-      where: {
-        machine: id,
-      },
-    });
-    if (!count) return;
-    await this.dbService.channels.deleteMany({
-      where: {
-        machine: id,
-      },
-    });
-  }
+    if (user.machineUUID) return;
 
-  async preassignMachineToUser(user: string): Promise<string> {
+    const machinesWithCount = await this.dbService.machine.findMany({
+      select: {
+        uuid: true,
+        _count: {
+          select: {
+            users: true,
+          }
+        }
+      },
+      orderBy: {
+        users: {
+          _count: 'asc'
+        }
+      },
+      take: 1,
+    });
+
     const MAX_USERS_PER_BOT =
       parseInt(this.configService.get<string>('MAX_USERS_PER_BOT')) || 1000;
 
-    const count = await this.dbService.channels.count({
+    const machine = machinesWithCount.find(m => m._count.users < MAX_USERS_PER_BOT);
+
+    if(!machine) throw new Error('No machine available');
+    await this.dbService.user.update({
       where: {
-        username: `#${user}`,
+        login: username,
       },
+      data: {
+        machineUUID: machine.uuid,
+      }
     });
-    if (count) return;
-    const machine = [...this.machineStatus]
-      .filter((state) => (state[1]?.count || 0) < MAX_USERS_PER_BOT)
-      .reduce((a, b) => (a[1]?.count < b[1]?.count ? a : b), []);
 
-    if (!machine) return;
-    const id = machine[0];
-    if (!id || !machine[1]) return;
-
-    const users = machine[1]?.users;
-    this.setOrUpdateMachineStatus(id, {
-      users: [...users, `#${user}`],
-      count: users.length + 1,
-    });
-    return id;
+    return machine.uuid;
   }
 }

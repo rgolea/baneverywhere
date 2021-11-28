@@ -3,16 +3,14 @@ import { AppService } from './app.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BotDatabaseModule } from "@baneverywhere/db";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { HttpModule } from "@nestjs/axios";
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { BOT_HANDLER_CONNECTION } from "@baneverywhere/namespaces";
+import { TwitchClientModule } from "@baneverywhere/twitch-client";
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     BotDatabaseModule,
-    ConfigModule.forRoot(),
-    HttpModule,
     ClientsModule.registerAsync([
       {
         imports: [ConfigModule],
@@ -25,7 +23,15 @@ import { BOT_HANDLER_CONNECTION } from "@baneverywhere/namespaces";
         inject: [ConfigService],
         name: BOT_HANDLER_CONNECTION,
       },
-    ])
+    ]),
+    TwitchClientModule.forRootAsync({
+      useFactory: (config) => ({
+        clientID: config.get('TWITCH_CLIENT_ID'),
+        clientSecret: config.get('TWITCH_CLIENT_SECRET'),
+      }),
+      inject: [ConfigService],
+      imports: [ConfigModule.forRoot()]
+    })
   ],
   providers: [AppService],
 })

@@ -445,7 +445,8 @@
           "outputs": ["coverage/apps/online-checker"],
           "options": {
             "jestConfig": "apps/online-checker/jest.config.js",
-            "passWithNoTests": true
+            "passWithNoTests": true,
+            "setupFilesAfterEnv": "jest.dotenv.ts"
           }
         }
       },
@@ -498,7 +499,8 @@
           "outputs": ["coverage/apps/queue-processor"],
           "options": {
             "jestConfig": "apps/queue-processor/jest.config.js",
-            "passWithNoTests": true
+            "passWithNoTests": true,
+            "setupFilesAfterEnv": "jest.dotenv.ts"
           }
         }
       },
