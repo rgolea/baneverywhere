@@ -48,7 +48,7 @@ export class AppController {
     const status = this.botClientService.getStatus();
     if (
       botId === this.botIdentifier &&
-      (!status.count || !status.users.includes(`#${channelName}`))
+      !status.users?.includes(`#${channelName}`)
     ) {
       return this.botClientService.joinChannel(channelName).then((status) => ({
         status,
@@ -64,7 +64,7 @@ export class AppController {
     channelName,
   }: BotDisconnectChannelParams): BotGetStatusResponse | Never {
     const status = this.botClientService.getStatus();
-    if (status.count && status.users.includes(`#${channelName}`)) {
+    if (status.users?.includes(`#${channelName}`)) {
       this.botClientService.leaveChannel(channelName);
       return {
         status: this.botClientService.getStatus(),
