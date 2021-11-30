@@ -2,61 +2,61 @@
   {
     "label": "API",
     "source": "./coverage/apps/api/coverage-summary.json",
-    "attribute": "./coverage/apps/api/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   },
   {
     "label": "Baneverywhere",
     "source": "./coverage/apps/baneverywhere/coverage-summary.json",
-    "attribute": "./coverage/apps/baneverywhere/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   },
   {
     "label": "Bot",
     "source": "./coverage/apps/bot/coverage-summary.json",
-    "attribute": "./coverage/apps/bot/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   },
   {
     "label": "Online Checker",
     "source": "./coverage/apps/online-checker/coverage-summary.json",
-    "attribute": "./coverage/apps/online-checker/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   },
   {
     "label": "Queue Processor",
     "source": "./coverage/apps/queue-processor/coverage-summary.json",
-    "attribute": "./coverage/apps/queue-processor/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   },
   {
     "label": "Bot Interfaces",
     "source": "./coverage/libs/bot-interfaces/coverage-summary.json",
-    "attribute": "./coverage/libs/bot-interfaces/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   },
   {
     "label": "DB",
     "source": "./coverage/libs/db/coverage-summary.json",
-    "attribute": "./coverage/libs/db/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   },
   {
     "label": "Error Handler",
     "source": "./coverage/libs/error-handler/coverage-summary.json",
-    "attribute": "./coverage/libs/error-handler/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   },
   {
     "label": "Namespaces",
     "source": "./coverage/libs/namespaces/coverage-summary.json",
-    "attribute": "./coverage/libs/namespaces/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   },
   {
     "label": "Twitch Client",
     "source": "./coverage/libs/twitch-client/coverage-summary.json",
-    "attribute": "./coverage/libs/twitch-client/coverage-summary.json",
+    "attribute": "total.statements.pct",
     "outputDir": "./coverage/badges"
   }
 ]

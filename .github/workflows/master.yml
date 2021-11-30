@@ -65,16 +65,7 @@ jobs:
       - run: npx nx-cloud start-ci-run
       - name: Run tests
         run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npx nx run-many --target=test --all --parallel=false --coverage --coverage-reporters=lcov,json-summary
-      - run: ./node_modules/.bin/coverage-badges --source coverage/apps/api/coverage-summary.json --output coverage/badges/api.svg
-      - run: ./node_modules/.bin/coverage-badges --source coverage/apps/baneverywhere/coverage-summary.json --output coverage/badges/baneverywhere.svg
-      - run: ./node_modules/.bin/coverage-badges --source coverage/apps/bot/coverage-summary.json --output coverage/badges/bot.svg
-      - run: ./node_modules/.bin/coverage-badges --source coverage/apps/online-checker/coverage-summary.json --output coverage/badges/online-checker.svg
-      - run: ./node_modules/.bin/coverage-badges --source coverage/apps/queue-processor/coverage-summary.json --output coverage/badges/queue-processor.svg
-      - run: ./node_modules/.bin/coverage-badges --source coverage/libs/bot-interfaces/coverage-summary.json --output coverage/badges/bot-interfaces.svg
-      - run: ./node_modules/.bin/coverage-badges --source coverage/libs/db/coverage-summary.json --output coverage/badges/db.svg
-      - run: ./node_modules/.bin/coverage-badges --source coverage/libs/error-handler/coverage-summary.json --output coverage/badges/error-handler.svg
-      - run: ./node_modules/.bin/coverage-badges --source coverage/libs/namespaces/coverage-summary.json --output coverage/badges/namespaces.svg
-      - run: ./node_modules/.bin/coverage-badges --source coverage/libs/twitch-client/coverage-summary.json --output coverage/badges/twitch-client.svg
+      - run: npx coverage-badges
       - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=2
       - run: npx nx-cloud stop-all-agents
       - name: Set up QEMU
