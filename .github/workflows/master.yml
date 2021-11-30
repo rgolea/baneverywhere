@@ -167,7 +167,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         with:
           config-name: release-drafter.yml
-          publish: true
+          publish: false
           tag: ${{ steps.bump-version.outputs.new_tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
