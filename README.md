@@ -1,5 +1,21 @@
 [![Deploy to Production](https://github.com/rgolea/baneverywhere/actions/workflows/master.yml/badge.svg)](https://github.com/rgolea/baneverywhere/actions/workflows/master.yml)
 
+|Project        |Coverage                                                                             |
+|---	          |---	                                                                                |
+|API            |![API](https://rgolea.github.io/baneverywhere/badges/api.svg)                        |
+|Baneverywhere  |![Twitch Client](https://rgolea.github.io/baneverywhere/badges/baneverywhere.svg)    |
+|Bot            |![Bot](https://rgolea.github.io/baneverywhere/badges/bot.svg)                        |
+|Online Checker |![Online Checker](https://rgolea.github.io/baneverywhere/badges/online_checker.svg)  |
+|Queue Processor|![Queue Processor](https://rgolea.github.io/baneverywhere/badges/queue_processor.svg)|
+
+|Libs           |Coverage                                                                             |
+|---	          |---	                                                                                |
+|Bot Interfaces |![Bot Interfaces](https://rgolea.github.io/baneverywhere/badges/bot_interfaces.svg)  |
+|DB             |![DB](https://rgolea.github.io/baneverywhere/badges/db.svg)                          |
+|Error Handler  |![Error Handler](https://rgolea.github.io/baneverywhere/badges/error_handler.svg)    |
+|Namespaces     |![Namespaces](https://rgolea.github.io/baneverywhere/badges/namespaces.svg)          |
+|Twitch Client  |![Twitch Client](https://rgolea.github.io/baneverywhere/badges/twitch_client.svg)    |
+
 # Baneverywhere
 
 This project was generated using [Nx](https://nx.dev).
