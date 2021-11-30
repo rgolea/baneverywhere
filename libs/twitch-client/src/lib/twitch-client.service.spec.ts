@@ -38,7 +38,29 @@ describe('TwitchClientService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should check user status', async ()=> {
+  it('should call twitch to obtain the access token', async () => {
+    const ACCESS_TOKEN = 'access_token';
+    const response: AxiosResponse<{ access_token: string }> = {
+      data: {
+        access_token: ACCESS_TOKEN,
+      },
+      headers: {},
+      statusText: HttpStatus.OK.toString(),
+      status: 200,
+      config: {},
+    };
+
+    const request = jest.spyOn(http, 'post').mockImplementation(() => of(response));
+    expect(service.getAccessToken).toBeDefined();
+
+    const twitchClientAccessToken = await service.getAccessToken();
+
+    expect(twitchClientAccessToken).toBeDefined();
+    expect(twitchClientAccessToken).toBe(ACCESS_TOKEN);
+    expect(request).toHaveBeenCalledWith('https://id.twitch.tv/oauth2/token?client_id=test&client_secret=test&grant_type=client_credentials');
+  });
+
+  it('should find username', async ()=> {
     const response: AxiosResponse<{ data: Array<{ login: string }> }> = {
       status: HttpStatus.OK,
       statusText: HttpStatus.OK.toString(),
@@ -50,8 +72,9 @@ describe('TwitchClientService', () => {
         }]
       }
     };
-    jest.spyOn(http, 'get').mockImplementation(() => of(response));
 
+    jest.spyOn(service, 'getAccessToken').mockImplementation(() => Promise.resolve('access_token'));
+    jest.spyOn(http, 'get').mockImplementation(() => of(response));
     const login = await service.findUsername('test');
     expect(login).toBe('test');
 
@@ -77,6 +100,7 @@ describe('TwitchClientService', () => {
       }
     };
 
+    jest.spyOn(service, 'getAccessToken').mockImplementation(() => Promise.resolve('access_token'));
     jest.spyOn(http, 'get').mockImplementation(() => of(response));
 
     expect(await service.checkUsersStatus(['test'])).toEqual(response);

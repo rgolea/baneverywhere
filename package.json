@@ -52,7 +52,7 @@
     "@nestjs/microservices": "^8.1.2",
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "8.1.1",
-    "@nestjs/schedule": "^1.0.1",
+    "@nestjs/schedule": "^1.0.2",
     "@ngxs/devtools-plugin": "^3.7.2",
     "@ngxs/logger-plugin": "^3.7.2",
     "@ngxs/store": "^3.7.2",

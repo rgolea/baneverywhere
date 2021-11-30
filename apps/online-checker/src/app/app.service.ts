@@ -17,31 +17,32 @@ export class AppService implements OnModuleInit {
     public readonly dbService: BotDatabaseService,
     @Inject(BOT_CONNECTION) public botClient: ClientProxy,
     public readonly twitchClientService: TwitchClientService,
-    private readonly configService: ConfigService
+    public readonly configService: ConfigService
   ) {
-    this.MAX_USERS_PER_BOT =
-      parseInt(this.configService.get<string>('MAX_USERS_PER_BOT', '1000'));
+    this.MAX_USERS_PER_BOT = parseInt(
+      this.configService.get<string>('MAX_USERS_PER_BOT', '1000')
+    );
   }
 
-  @logError()
+  onModuleInit() {
+    this.checkIfUserIsOnline();
+  }
+
   @Cron(CronExpression.EVERY_MINUTE)
+  @logError()
   async checkOnline() {
     this.checkIfUserIsOnline();
   }
 
-  @logError()
   @Cron(CronExpression.EVERY_MINUTE)
+  @logError()
   synchronizeBotStatus() {
-    this.botClient.emit<void, unknown>(
-      BotPatterns.BOT_GET_STATUS,
-      uuidv4()
-    );
+    this.botClient.emit<void, unknown>(BotPatterns.BOT_GET_STATUS, uuidv4());
   }
 
-  @logError()
   @Cron(CronExpression.EVERY_MINUTE)
+  @logError()
   async removeMachinesInLimbo() {
-    console.log('Removing machines in limbo');
     const machines = await this.dbService.machine.findMany({
       where: {
         lastSeen: {
@@ -74,11 +75,6 @@ export class AppService implements OnModuleInit {
   }
 
   @logError()
-  onModuleInit() {
-    this.checkIfUserIsOnline();
-  }
-
-  @logError()
   async preassignMachineToUser(username: string): Promise<string> {
     const machinesWithCount = await this.dbService.machine.findMany({
       select: {
@@ -104,7 +100,7 @@ export class AppService implements OnModuleInit {
 
     await this.dbService.user.update({
       where: {
-        login: username
+        login: username,
       },
       data: {
         machineUUID: machine.uuid,
@@ -128,18 +124,16 @@ export class AppService implements OnModuleInit {
     });
 
     if (users.length === 0) return;
-    console.log('Checking if users are online');
     const {
       data: { data: channels },
     } = await this.twitchClientService.checkUsersStatus(
       users.map((u) => u.login)
     );
-    console.log(JSON.stringify({ channels }, null, 2));
 
-    const usernames = channels.map(channel => channel.user_login);
+    const usernames = channels.map((channel) => channel.user_login);
 
-    const online = users.filter(user => usernames.includes(user.login));
-    const offline = users.filter(user => !usernames.includes(user.login));
+    const online = users.filter((user) => usernames.includes(user.login));
+    const offline = users.filter((user) => !usernames.includes(user.login));
 
     await this.dbService.user.updateMany({
       where: {
@@ -152,21 +146,25 @@ export class AppService implements OnModuleInit {
       },
     });
 
-    await Promise.all(offline.map(async (u) => {
-      this.botClient.emit(BotPatterns.USER_OFFLINE, {
-        channelName: u.login,
-        botId: u.machineUUID,
-      });
-    }));
+    await Promise.all(
+      offline.map(async (u) => {
+        this.botClient.emit(BotPatterns.USER_OFFLINE, {
+          channelName: u.login,
+          botId: u.machineUUID,
+        });
+      })
+    );
 
-    await Promise.all(online.map(async (user) => {
-      if(user.machineUUID) return;
-      const machineID = await this.preassignMachineToUser(user.login);
-      this.botClient.emit(BotPatterns.USER_ONLINE, {
-        channelName: user.login,
-        botId: machineID,
-      });
-    }));
+    await Promise.all(
+      online.map(async (user) => {
+        if (user.machineUUID) return;
+        const machineID = await this.preassignMachineToUser(user.login);
+        this.botClient.emit(BotPatterns.USER_ONLINE, {
+          channelName: user.login,
+          botId: machineID,
+        });
+      })
+    );
 
     if (users.length === 20) {
       await this.checkIfUserIsOnline(users[19].id);
