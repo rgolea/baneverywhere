@@ -46,18 +46,6 @@ services:
     depends_on:
       - redis
 
-  bot-handler:
-    image: rgolea/baneverywhere-bot-handler:latest
-    command: node main.js
-    container_name: bot-handler-baneverywhere
-    stdin_open: true
-    tty: true
-    restart: unless-stopped
-    env_file: /.env
-    depends_on:
-      - redis
-      - postgres
-
   online-checker:
     image: rgolea/baneverywhere-online-checker:latest
     command: node main.js

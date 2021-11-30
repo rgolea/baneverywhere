@@ -61,16 +61,6 @@ jobs:
           context: .
           cache-from: type=local,src=/tmp/.buildx-cache-api
           cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
-      - name: Build and push Bot Handler Image
-        id: docker_build_bot_handler
-        uses: docker/build-push-action@v2
-        with:
-          file: ./config/docker/bot-handler.Dockerfile
-          push: true
-          tags: rgolea/baneverywhere-bot-handler:latest
-          context: .
-          cache-from: type=local,src=/tmp/.buildx-cache-api
-          cache-to: type=local,dest=/tmp/.buildx-cache-api-new,mode=max
       - name: Build and push Migration Image
         id: docker_build_migration
         uses: docker/build-push-action@v2

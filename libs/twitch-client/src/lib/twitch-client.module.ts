@@ -43,6 +43,6 @@ export class TwitchClientModule {
   @logError()
   static forRootAsync(opts: TwitchClientOptionsProviderFactory){
     const optionsProvider = generateOptionsProvider(opts);
-    return generateModule(optionsProvider, opts.inject);
+    return generateModule(optionsProvider, opts.imports);
   }
 }

@@ -1,91 +1,169 @@
 import { BotDatabaseService } from '@baneverywhere/db';
-import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { lastValueFrom } from 'rxjs';
-import { BOT_HANDLER_CONNECTION } from '@baneverywhere/namespaces';
+import { BOT_CONNECTION } from '@baneverywhere/namespaces';
 import { ClientProxy } from '@nestjs/microservices';
 import { BotPatterns } from '@baneverywhere/bot-interfaces';
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
+import { logError } from '@baneverywhere/error-handler';
+import { TwitchClientService } from '@baneverywhere/twitch-client';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService implements OnModuleInit {
+  private MAX_USERS_PER_BOT: number;
+
   constructor(
-    private readonly configService: ConfigService,
-    private readonly http: HttpService,
-    private readonly dbService: BotDatabaseService,
-    @Inject(BOT_HANDLER_CONNECTION) private botHandlerClient: ClientProxy
-  ) {}
+    public readonly dbService: BotDatabaseService,
+    @Inject(BOT_CONNECTION) public botClient: ClientProxy,
+    public readonly twitchClientService: TwitchClientService,
+    private readonly configService: ConfigService
+  ) {
+    this.MAX_USERS_PER_BOT =
+      parseInt(this.configService.get<string>('MAX_USERS_PER_BOT', '1000'));
+  }
 
   @Cron(CronExpression.EVERY_MINUTE)
+  @logError()
   async checkOnline() {
     this.checkIfUserIsOnline();
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
+  @logError()
   synchronizeBotStatus() {
-    this.botHandlerClient.emit<void, unknown>(
+    this.botClient.emit<void, unknown>(
       BotPatterns.BOT_GET_STATUS,
       uuidv4()
     );
   }
 
+  @Cron(CronExpression.EVERY_MINUTE)
+  @logError()
+  async removeMachinesInLimbo() {
+    const machines = await this.dbService.machine.findMany({
+      where: {
+        lastSeen: {
+          lt: new Date(Date.now() - 1000 * 120),
+        },
+      },
+      select: {
+        uuid: true,
+      },
+    });
+
+    await this.dbService.user.updateMany({
+      where: {
+        machineUUID: {
+          in: machines.map((m) => m.uuid),
+        },
+      },
+      data: {
+        machineUUID: null,
+      },
+    });
+
+    await this.dbService.machine.deleteMany({
+      where: {
+        uuid: {
+          in: machines.map((m) => m.uuid),
+        },
+      },
+    });
+  }
+
+  @logError()
   onModuleInit() {
     this.checkIfUserIsOnline();
   }
 
+  @logError()
+  async preassignMachineToUser(username: string): Promise<string> {
+    const machinesWithCount = await this.dbService.machine.findMany({
+      select: {
+        uuid: true,
+        _count: {
+          select: {
+            users: true,
+          },
+        },
+      },
+      orderBy: {
+        users: {
+          _count: 'asc',
+        },
+      },
+      take: 1,
+    });
+
+    const machine = machinesWithCount.find(
+      (m) => m._count.users < this.MAX_USERS_PER_BOT
+    );
+    if (!machine) throw new Error('No machine available');
+
+    await this.dbService.user.update({
+      where: {
+        login: username
+      },
+      data: {
+        machineUUID: machine.uuid,
+      },
+    });
+
+    return machine.uuid;
+  }
+
+  @logError()
   async checkIfUserIsOnline(cursor?: number) {
     const users = await this.dbService.user.findMany({
       select: {
         id: true,
         login: true,
+        machineUUID: true,
       },
       take: 20,
       skip: cursor ? 1 : 0,
       ...(cursor ? { cursor: { id: cursor } } : {}),
     });
 
-    if(users.length === 0) return;
+    if (users.length === 0) return;
     const {
-      data: { access_token },
-    } = await lastValueFrom(
-      this.http.post<{ access_token: string }>(
-        `https://id.twitch.tv/oauth2/token?client_id=${this.configService.get(
-          'TWITCH_CLIENT_ID'
-        )}&client_secret=${this.configService.get(
-          'TWITCH_CLIENT_SECRET'
-        )}&grant_type=client_credentials`
-      )
+      data: { data: channels },
+    } = await this.twitchClientService.checkUsersStatus(
+      users.map((u) => u.login)
     );
 
-    const url = `https://api.twitch.tv/helix/streams?user_login=${users
-      .map((user) => user.login)
-      .join('&user_login=')}`;
+    const usernames = channels.map(channel => channel.user_login);
 
-    const channels = await lastValueFrom(
-      this.http.get<{ data: Array<{ user_login: string; type: string }> }>(
-        url,
-        {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-            'Client-Id': this.configService.get<string>('TWITCH_CLIENT_ID'),
-          },
-        }
-      )
-    );
+    const online = users.filter(user => usernames.includes(user.login));
+    const offline = users.filter(user => !usernames.includes(user.login));
 
-    const onlineUsers = channels.data.data.map((channel) => channel.user_login);
-    const offlineUsers = users.filter(
-      (user) => !onlineUsers.includes(user.login)
-    );
-    onlineUsers.forEach((user) => {
-      this.botHandlerClient.emit(BotPatterns.USER_ONLINE, user);
+    await this.dbService.user.updateMany({
+      where: {
+        login: {
+          in: offline.map((u) => u.login),
+        },
+      },
+      data: {
+        machineUUID: null,
+      },
     });
 
-    offlineUsers.forEach((user) => {
-      this.botHandlerClient.emit(BotPatterns.USER_OFFLINE, user.login);
-    });
+    await Promise.all(offline.map(async (u) => {
+      this.botClient.emit(BotPatterns.USER_OFFLINE, {
+        channelName: u.login,
+        botId: u.machineUUID,
+      });
+    }));
+
+    await Promise.all(online.map(async (user) => {
+      if(user.machineUUID) return;
+      const machineID = await this.preassignMachineToUser(user.login);
+      this.botClient.emit(BotPatterns.USER_ONLINE, {
+        channelName: user.login,
+        botId: machineID,
+      });
+    }));
 
     if (users.length === 20) {
       await this.checkIfUserIsOnline(users[19].id);

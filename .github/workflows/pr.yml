@@ -6,11 +6,33 @@ env:
   NX_BRANCH: ${{ github.event.number || github.ref }}
   NX_RUN_GROUP: $${{ github.run_id }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  DATABASE_URL: "postgres://postgres:postgres@localhost:5432/baneverywhere-testing?schema=public"
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
 
 jobs:
   pr:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps TCP port 5432 on service container to the host
+          - 5432:5432
+
     steps:
       - uses: actions/checkout@v2
         with:
@@ -31,7 +53,10 @@ jobs:
           node-version: 16.13
       - run: npm ci
       - run: npm run generate
+      - run: npx prisma migrate deploy
       - run: npx nx-cloud start-ci-run
+      - name: Run tests
+        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npx nx affected --base=remotes/origin/master --target=test --parallel=false
       - run: npx nx affected --base=remotes/origin/master --target=build --parallel --max-parallel=2
       - run: npx nx-cloud stop-all-agents
 

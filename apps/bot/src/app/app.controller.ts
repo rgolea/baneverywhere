@@ -1,12 +1,10 @@
 import { Controller, Inject } from '@nestjs/common';
 import {
-  ClientProxy,
   EventPattern,
   MessagePattern,
 } from '@nestjs/microservices';
 import { BotClientService } from './bot-client/bot-client.service';
 import { BOT_IDENTIFIER } from './bot.identifier';
-import { BOT_HANDLER_CONNECTION } from '@baneverywhere/namespaces';
 import {
   BotConnectChannelParams,
   BotConnectChannelResponse,
@@ -17,30 +15,29 @@ import {
   BotPatterns,
 } from '@baneverywhere/bot-interfaces';
 import { Actions } from '@prisma/client';
-import { channelToUsername } from './bot-client/utils';
-import { Observable } from 'rxjs';
+import { BotDatabaseService } from '@baneverywhere/db';
 
 @Controller('app')
 export class AppController {
   constructor(
     @Inject(BOT_IDENTIFIER) private readonly botIdentifier: string,
     private readonly botClientService: BotClientService,
-    @Inject(BOT_HANDLER_CONNECTION)
-    private readonly botHandlerConnection: ClientProxy
+    private readonly dbService: BotDatabaseService
   ) {}
 
   @EventPattern(BotPatterns.BOT_GET_STATUS)
-  getStatus() {
-    this.botHandlerConnection.emit<void, BotGetStatusResponse>(
-      BotPatterns.BOT_STATUS_RESPONSE,
-      {
-        identifier: this.botIdentifier,
-        status: this.botClientService.getStatus(),
+  async getStatus() {
+    await this.dbService.machine.update({
+      where: {
+        uuid: this.botIdentifier,
+      },
+      data: {
+        lastSeen: new Date()
       }
-    );
+    });
   }
 
-  @MessagePattern(BotPatterns.BOT_CONNECT_CHANNEL)
+  @MessagePattern(BotPatterns.USER_ONLINE)
   connectToChannel({
     channelName,
     botId,
@@ -57,7 +54,7 @@ export class AppController {
     }
   }
 
-  @MessagePattern(BotPatterns.BOT_DISCONNECT_CHANNEL)
+  @MessagePattern(BotPatterns.USER_OFFLINE)
   disconnectFromChannel({
     channelName,
   }: BotDisconnectChannelParams): BotGetStatusResponse | Never {
