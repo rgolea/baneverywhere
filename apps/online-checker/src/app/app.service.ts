@@ -23,14 +23,14 @@ export class AppService implements OnModuleInit {
       parseInt(this.configService.get<string>('MAX_USERS_PER_BOT', '1000'));
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
   @logError()
+  @Cron(CronExpression.EVERY_MINUTE)
   async checkOnline() {
     this.checkIfUserIsOnline();
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
   @logError()
+  @Cron(CronExpression.EVERY_MINUTE)
   synchronizeBotStatus() {
     this.botClient.emit<void, unknown>(
       BotPatterns.BOT_GET_STATUS,
@@ -38,8 +38,8 @@ export class AppService implements OnModuleInit {
     );
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
   @logError()
+  @Cron(CronExpression.EVERY_MINUTE)
   async removeMachinesInLimbo() {
     console.log('Removing machines in limbo');
     const machines = await this.dbService.machine.findMany({
