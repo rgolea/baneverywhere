@@ -1,20 +1,20 @@
 [![Deploy to Production](https://github.com/rgolea/baneverywhere/actions/workflows/master.yml/badge.svg)](https://github.com/rgolea/baneverywhere/actions/workflows/master.yml)
 
-|Project        |Coverage                                                                             |
-|---	          |---	                                                                                |
-|API            |![API](https://rgolea.github.io/baneverywhere/badges/api.svg)                        |
-|Baneverywhere  |![Twitch Client](https://rgolea.github.io/baneverywhere/badges/baneverywhere.svg)    |
-|Bot            |![Bot](https://rgolea.github.io/baneverywhere/badges/bot.svg)                        |
-|Online Checker |![Online Checker](https://rgolea.github.io/baneverywhere/badges/online_checker.svg)  |
-|Queue Processor|![Queue Processor](https://rgolea.github.io/baneverywhere/badges/queue_processor.svg)|
+|Project        |Coverage                                                                                                                                                         |
+|---	          |---	                                                                                                                                                            |
+|API            |[![API](https://rgolea.github.io/baneverywhere/badges/api.svg)](https://rgolea.github.io/baneverywhere/apps/api/lcov-report/)                                    |
+|Baneverywhere  |[![Twitch Client](https://rgolea.github.io/baneverywhere/badges/baneverywhere.svg)](https://rgolea.github.io/baneverywhere/apps/baneverywhere/lcov-report/)      |
+|Bot            |[![Bot](https://rgolea.github.io/baneverywhere/badges/bot.svg)](https://rgolea.github.io/baneverywhere/apps/bot/lcov-report/)                                    |
+|Online Checker |[![Online Checker](https://rgolea.github.io/baneverywhere/badges/online_checker.svg)](https://rgolea.github.io/baneverywhere/apps/online-checker/lcov-report/)   |
+|Queue Processor|[![Queue Processor](https://rgolea.github.io/baneverywhere/badges/queue_processor.svg)](https://rgolea.github.io/baneverywhere/apps/queue-processor/lcov-report/)|
 
-|Libs           |Coverage                                                                             |
-|---	          |---	                                                                                |
-|Bot Interfaces |![Bot Interfaces](https://rgolea.github.io/baneverywhere/badges/bot_interfaces.svg)  |
-|DB             |![DB](https://rgolea.github.io/baneverywhere/badges/db.svg)                          |
-|Error Handler  |![Error Handler](https://rgolea.github.io/baneverywhere/badges/error_handler.svg)    |
-|Namespaces     |![Namespaces](https://rgolea.github.io/baneverywhere/badges/namespaces.svg)          |
-|Twitch Client  |![Twitch Client](https://rgolea.github.io/baneverywhere/badges/twitch_client.svg)    |
+|Libs           |Coverage                                                                                                                                                         |
+|---	          |---	                                                                                                                                                            |
+|Bot Interfaces |[![Bot Interfaces](https://rgolea.github.io/baneverywhere/badges/bot_interfaces.svg)](https://rgolea.github.io/baneverywhere/libs/bot-interfaces/lcov-report/)   |
+|DB             |[![DB](https://rgolea.github.io/baneverywhere/badges/db.svg)](https://rgolea.github.io/baneverywhere/libs/db/lcov-report/)                                       |
+|Error Handler  |[![Error Handler](https://rgolea.github.io/baneverywhere/badges/error_handler.svg)](https://rgolea.github.io/baneverywhere/libs/error-handler/lcov-report/)      |
+|Namespaces     |[![Namespaces](https://rgolea.github.io/baneverywhere/badges/namespaces.svg)](https://rgolea.github.io/baneverywhere/libs/namespaces/lcov-report/)               |
+|Twitch Client  |[![Twitch Client](https://rgolea.github.io/baneverywhere/badges/twitch_client.svg)](https://rgolea.github.io/baneverywhere/libs/twitch-client/lcov-report/)      |
 
 # Baneverywhere
 
