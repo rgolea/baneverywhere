@@ -5,4 +5,4 @@ COPY dist/apps/bot /app
 COPY prisma /app/prisma
 
 RUN npm install
-RUN npm run generate
+RUN ./node_modules/.bin/prisma generate
