@@ -6,8 +6,7 @@ env:
   NX_BRANCH: ${{ github.event.number || github.ref }}
   NX_RUN_GROUP: $${{ github.run_id }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  DATABASE_HOST: 'localhost'
-  DATABASE_PORT: 5432
+  DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/baneverywhere-testing?schema=public'
 
 jobs:
   pr:
@@ -20,9 +19,6 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
           POSTGRES_DB: baneverywhere-testing
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
