@@ -31,7 +31,7 @@ jobs:
       - name: Draft Release notes
         id: draft-release-notes
         uses: release-drafter/release-drafter@v5
-        if: github.ref == 'refs/heads/env-prod'
+        if: github.ref == 'refs/heads/master'
         with:
           config-name: release-drafter.yml
           publish: true
