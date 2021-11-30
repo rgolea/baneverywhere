@@ -17,6 +17,23 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps TCP port 5432 on service container to the host
+          - 5432:5432
     steps:
       - uses: actions/checkout@v2
         with:
@@ -44,6 +61,11 @@ jobs:
       - run: npm ci
       - run: npm run generate
       - run: npx nx-cloud start-ci-run
+      - name: Run tests
+        run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npx nx run-many --target=test --all --parallel=false --coverage --coverage-reporters=lcov
+      - run: node ./tools/coverageMerger.js
+      - run: npm i coverage-badges-cli -g
+      - run: coverage-badges --output coverage/badges.svg
       - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=2
       - run: npx nx-cloud stop-all-agents
       - name: Set up QEMU
@@ -139,6 +161,12 @@ jobs:
             rm -rf docker-compose.yml
             wget https://raw.githubusercontent.com/rgolea/baneverywhere/master/docker-compose.yml --no-cache --no-dns-cache
             docker-compose up -d
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/master'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./coverage
 
   release:
     runs-on: ubuntu-latest
@@ -167,7 +195,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         with:
           config-name: release-drafter.yml
-          publish: true
+          publish: false
           tag: ${{ steps.bump-version.outputs.new_tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

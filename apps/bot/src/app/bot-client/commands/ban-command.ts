@@ -2,10 +2,13 @@ import { CommandExecutor, CommandOrigins } from 'tmijs-commander';
 import { channelToUsername } from '../utils';
 import { Action } from '@prisma/client';
 import { Queue } from 'bull';
+import { logError } from '@baneverywhere/error-handler';
 export class BanCommand extends CommandExecutor {
   constructor(private readonly queue: Queue) {
     super();
   }
+
+  @logError()
   public async invoke({
     author,
     channel,
@@ -25,7 +28,11 @@ export class BanCommand extends CommandExecutor {
 
     await client.ban(channel, user, reason).catch((err) => {
       console.log(err);
-      client.say(channel, `Could not perform operation`);
+      if(!client.isMod(channel, client.getUsername())) {
+        client.say(channel, `Could not ban ${user} because I am not yet a mod`);
+      } {
+        client.say(channel, `${user} might already be banned. I sent the request to the streamers that follow you.`);
+      }
     });
     client.say(channel, `${user} has been banned.`);
     await this.queue.add(Action.BAN, {
