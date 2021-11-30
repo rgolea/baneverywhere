@@ -6,6 +6,7 @@ env:
   NX_BRANCH: ${{ github.event.number || github.ref }}
   NX_RUN_GROUP: $${{ github.run_id }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  DATABASE_URL: "postgres://postgres:postgres@localhost:5432/baneverywhere-testing?schema=public"
 concurrency:
   group: ${{ github.head_ref }}
   cancel-in-progress: true
@@ -52,11 +53,10 @@ jobs:
           node-version: 16.13
       - run: npm ci
       - run: npm run generate
+      - run: npx prisma migrate deploy
       - run: npx nx-cloud start-ci-run
       - name: Run tests
         run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npx nx affected --base=remotes/origin/master --target=test --parallel=false
-        env:
-          DATABASE_URL: "postgres://postgres:postgres@localhost:5432/baneverywhere-testing?schema=public"
       - run: npx nx affected --base=remotes/origin/master --target=build --parallel --max-parallel=2
       - run: npx nx-cloud stop-all-agents
 
