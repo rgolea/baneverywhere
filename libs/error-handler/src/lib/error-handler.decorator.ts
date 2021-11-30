@@ -1,18 +1,17 @@
 import { Logger } from '@nestjs/common';
 
-export const logError = (bubble = true) => {
+export const logError = (bubble = true, defaultLogger?: Logger) => {
   return (
     target: unknown,
     propertyKey: string,
     propertyDescriptor: PropertyDescriptor
   ) => {
-    const logger = new Logger(
+    const logger = defaultLogger || new Logger(
       `${target.constructor.name}@${propertyKey}`
     );
 
     //get original method
     const originalMethod = propertyDescriptor.value;
-
     //redefine descriptor value within own function block
     propertyDescriptor.value = async function (...args: unknown[]) {
       try {
