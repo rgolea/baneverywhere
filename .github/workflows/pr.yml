@@ -52,6 +52,7 @@ jobs:
           node-version: 16.13
       - run: npm ci
       - run: npm run generate
+      - run: npx prisma migrate deploy
       - run: npx nx-cloud start-ci-run
       - name: Run tests
         run: npx nx affected --base=remotes/origin/master --target=test --parallel --max-parallel=2

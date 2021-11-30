@@ -5,4 +5,6 @@ config({
   path: `.env.test`,
 });
 
-execSync(`npx prisma migrate deploy`);
+if(!process.env.CI) {
+  execSync(`DATABASE_URL=${process.env.DATABASE_URL} npx prisma migrate deploy`);
+}
