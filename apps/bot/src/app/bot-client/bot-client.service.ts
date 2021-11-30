@@ -50,7 +50,7 @@ export class BotClientService implements OnModuleInit {
   getStatus(): BotStatus {
     const users = this.client.getChannels() || [];
     return {
-      count: users.length,
+      count: users?.length || 0,
       users,
     };
   }
