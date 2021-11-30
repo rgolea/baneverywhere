@@ -41,6 +41,7 @@ export class AppService implements OnModuleInit {
   @Cron(CronExpression.EVERY_MINUTE)
   @logError()
   async removeMachinesInLimbo() {
+    console.log('Removing machines in limbo');
     const machines = await this.dbService.machine.findMany({
       where: {
         lastSeen: {
@@ -127,11 +128,13 @@ export class AppService implements OnModuleInit {
     });
 
     if (users.length === 0) return;
+    console.log('Checking if users are online');
     const {
       data: { data: channels },
     } = await this.twitchClientService.checkUsersStatus(
       users.map((u) => u.login)
     );
+    console.log(JSON.stringify({ channels }, null, 2));
 
     const usernames = channels.map(channel => channel.user_login);
 
