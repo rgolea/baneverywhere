@@ -5,4 +5,4 @@ config({
   path: `.env.test`,
 });
 
-execSync(`DATABASE_URL=${process.env.DATABASE_URL} npx prisma migrate deploy`);
+execSync(`DATABASE_URL=postgres://postgres:postgres@localhost:5432/baneverywhere-testing?schema=public npx prisma migrate deploy`);
