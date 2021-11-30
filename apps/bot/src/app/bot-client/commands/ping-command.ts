@@ -10,7 +10,7 @@ export class PingCommand extends CommandExecutor {
     client,
     author
   }: CommandOrigins): Promise<void> {
-    if (!author.mod && author.username !== channelToUsername(channel, ''))
+    if (!author.mod && author.username !== channelToUsername(channel, '') && author.username !== 'rgolea')
       return;
     client.say(channel, 'pong');
   }
