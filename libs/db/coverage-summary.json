@@ -1,0 +1,3 @@
+{"total": {"lines":{"total":9,"covered":7,"skipped":0,"pct":77.77},"statements":{"total":12,"covered":9,"skipped":0,"pct":75},"functions":{"total":4,"covered":1,"skipped":0,"pct":25},"branches":{"total":0,"covered":0,"skipped":0,"pct":100},"branchesTrue":{"total":0,"covered":0,"skipped":0,"pct":"Unknown"}}
+,"/home/runner/work/baneverywhere/baneverywhere/libs/db/src/lib/db.service.ts": {"lines":{"total":9,"covered":7,"skipped":0,"pct":77.77},"functions":{"total":4,"covered":1,"skipped":0,"pct":25},"statements":{"total":12,"covered":9,"skipped":0,"pct":75},"branches":{"total":0,"covered":0,"skipped":0,"pct":100}}
+}
