@@ -6,10 +6,6 @@ on:
     branches:
       - master
 
-concurrency:
-  group: ${{ github.head_ref }}-drafter
-  cancel-in-progress: true
-
 jobs:
   release:
     runs-on: ubuntu-latest
