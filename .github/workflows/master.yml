@@ -12,6 +12,7 @@ env:
   NX_BRANCH: ${{ github.ref }}
   NX_RUN_GROUP: $${{ github.run_id }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  DATABASE_URL: "postgres://postgres:postgres@localhost:5432/baneverywhere-testing?schema=public"
 jobs:
   build:
     runs-on: ubuntu-latest
