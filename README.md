@@ -1,4 +1,4 @@
-
+[![Deploy to Production](https://github.com/rgolea/baneverywhere/actions/workflows/master.yml/badge.svg)](https://github.com/rgolea/baneverywhere/actions/workflows/master.yml)
 
 # Baneverywhere
 
