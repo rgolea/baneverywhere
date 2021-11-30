@@ -1,0 +1,40 @@
+name: Release Drafter
+
+on:
+  push:
+    # branches to consider in the event; optional, defaults to all
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: set env
+        run: echo "NOW=v.$(date +'%Y%m%d.%H%M%S')" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+
+      - name: Bump version and push tag
+        id: bump-version
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CUSTOM_TAG:  ${{ github.ref_name }}-${{ env.NOW }}
+      # (Optional) GitHub Enterprise requires GHE_HOST variable set
+      #- name: Set GHE_HOST
+      #  run: |
+      #    echo "GHE_HOST=${GITHUB_SERVER_URL##https:\/\/}" >> $GITHUB_ENV
+
+      # Drafts your next Release notes as Pull Requests are merged into "master"
+      - name: Draft Release notes
+        id: draft-release-notes
+        uses: release-drafter/release-drafter@v5
+        if: github.ref == 'refs/heads/env-prod'
+        with:
+          config-name: release-drafter.yml
+          publish: true
+          tag: ${{ steps.bump-version.outputs.new_tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
