@@ -1,7 +1,7 @@
 import { BotDatabaseService } from '@baneverywhere/db';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { BOT_HANDLER_CONNECTION } from '@baneverywhere/namespaces';
+import { BOT_CONNECTION } from '@baneverywhere/namespaces';
 import { ClientProxy } from '@nestjs/microservices';
 import { BotPatterns } from '@baneverywhere/bot-interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,7 +15,7 @@ export class AppService implements OnModuleInit {
 
   constructor(
     public readonly dbService: BotDatabaseService,
-    @Inject(BOT_HANDLER_CONNECTION) public botHandlerClient: ClientProxy,
+    @Inject(BOT_CONNECTION) public botClient: ClientProxy,
     public readonly twitchClientService: TwitchClientService,
     private readonly configService: ConfigService
   ) {
@@ -32,45 +32,45 @@ export class AppService implements OnModuleInit {
   @Cron(CronExpression.EVERY_MINUTE)
   @logError()
   synchronizeBotStatus() {
-    this.botHandlerClient.emit<void, unknown>(
+    this.botClient.emit<void, unknown>(
       BotPatterns.BOT_GET_STATUS,
       uuidv4()
     );
   }
 
-  // @Cron(CronExpression.EVERY_MINUTE)
-  // @logError()
-  // async removeMachinesInLimbo() {
-  //   const machines = await this.dbService.machine.findMany({
-  //     where: {
-  //       lastSeen: {
-  //         lt: new Date(Date.now() - 1000 * 120),
-  //       },
-  //     },
-  //     select: {
-  //       uuid: true,
-  //     },
-  //   });
+  @Cron(CronExpression.EVERY_MINUTE)
+  @logError()
+  async removeMachinesInLimbo() {
+    const machines = await this.dbService.machine.findMany({
+      where: {
+        lastSeen: {
+          lt: new Date(Date.now() - 1000 * 120),
+        },
+      },
+      select: {
+        uuid: true,
+      },
+    });
 
-  //   await this.dbService.user.updateMany({
-  //     where: {
-  //       machineUUID: {
-  //         in: machines.map((m) => m.uuid),
-  //       },
-  //     },
-  //     data: {
-  //       machineUUID: null,
-  //     },
-  //   });
+    await this.dbService.user.updateMany({
+      where: {
+        machineUUID: {
+          in: machines.map((m) => m.uuid),
+        },
+      },
+      data: {
+        machineUUID: null,
+      },
+    });
 
-  //   await this.dbService.machine.deleteMany({
-  //     where: {
-  //       uuid: {
-  //         in: machines.map((m) => m.uuid),
-  //       },
-  //     },
-  //   });
-  // }
+    await this.dbService.machine.deleteMany({
+      where: {
+        uuid: {
+          in: machines.map((m) => m.uuid),
+        },
+      },
+    });
+  }
 
   @logError()
   onModuleInit() {
@@ -150,7 +150,7 @@ export class AppService implements OnModuleInit {
     });
 
     await Promise.all(offline.map(async (u) => {
-      this.botHandlerClient.emit(BotPatterns.USER_OFFLINE, {
+      this.botClient.emit(BotPatterns.USER_OFFLINE, {
         channelName: u.login,
         botId: u.machineUUID,
       });
@@ -159,7 +159,7 @@ export class AppService implements OnModuleInit {
     await Promise.all(online.map(async (user) => {
       if(user.machineUUID) return;
       const machineID = await this.preassignMachineToUser(user.login);
-      this.botHandlerClient.emit(BotPatterns.USER_ONLINE, {
+      this.botClient.emit(BotPatterns.USER_ONLINE, {
         channelName: user.login,
         botId: machineID,
       });

@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { AppService } from './app.service';
 import { BotDatabaseService } from '@baneverywhere/db';
 import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
-import { BOT_HANDLER_CONNECTION } from '@baneverywhere/namespaces';
+import { BOT_CONNECTION } from '@baneverywhere/namespaces';
 import {
   TwitchClientModule,
   TwitchClientService,
@@ -32,7 +32,7 @@ describe('AppService', () => {
   let service: AppService;
   let dbService: BotDatabaseService;
   let twitchClientService: TwitchClientService;
-  let botHandlerClient: ClientProxy;
+  let botClient: ClientProxy;
 
   beforeAll(async () => {
     const testingModule = await Test.createTestingModule({
@@ -40,7 +40,7 @@ describe('AppService', () => {
         ConfigModule,
         ClientsModule.register([
           {
-            name: BOT_HANDLER_CONNECTION,
+            name: BOT_CONNECTION,
             transport: Transport.TCP,
           },
         ]),
@@ -59,7 +59,7 @@ describe('AppService', () => {
     dbService = testingModule.get<BotDatabaseService>(BotDatabaseService);
     twitchClientService =
       testingModule.get<TwitchClientService>(TwitchClientService);
-    botHandlerClient = testingModule.get<ClientProxy>(BOT_HANDLER_CONNECTION);
+    botClient = testingModule.get<ClientProxy>(BOT_CONNECTION);
 
     await dbService.machine.create({
       data: {
@@ -85,7 +85,7 @@ describe('AppService', () => {
     it('should have all dependencies injected', () => {
       expect(service).toBeDefined();
       expect(service.twitchClientService).toBeTruthy();
-      expect(service.botHandlerClient).toBeTruthy();
+      expect(service.botClient).toBeTruthy();
       expect(service.dbService).toBeTruthy();
     });
   });
@@ -159,7 +159,7 @@ describe('AppService', () => {
         .mockImplementation(() => Promise.resolve(response));
 
       const botHandlerClientEmitMock = jest
-        .spyOn(botHandlerClient, 'emit')
+        .spyOn(botClient, 'emit')
         .mockImplementation(() => of(null));
 
       await service.checkIfUserIsOnline();

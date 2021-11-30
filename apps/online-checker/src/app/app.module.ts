@@ -4,9 +4,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BotDatabaseModule } from "@baneverywhere/db";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { BOT_HANDLER_CONNECTION } from "@baneverywhere/namespaces";
+import { BOT_CONNECTION } from "@baneverywhere/namespaces";
 import { TwitchClientModule } from "@baneverywhere/twitch-client";
-console.log(ConfigModule);
 @Module({
   imports: [
     ConfigModule,
@@ -22,7 +21,7 @@ console.log(ConfigModule);
           }
         }),
         inject: [ConfigService],
-        name: BOT_HANDLER_CONNECTION,
+        name: BOT_CONNECTION,
       },
     ]),
     TwitchClientModule.forRootAsync({

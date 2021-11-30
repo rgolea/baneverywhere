@@ -1,2 +1,1 @@
-export const BOT_HANDLER_CONNECTION = Symbol('BOT_HANDLER_CONNECTION');
 export const BOT_CONNECTION = Symbol('BOT_CONNECTION');
