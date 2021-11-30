@@ -65,17 +65,16 @@ jobs:
       - run: npx nx-cloud start-ci-run
       - name: Run tests
         run: NX_CLOUD_DISTRIBUTED_EXECUTION=false npx nx run-many --target=test --all --parallel=false --coverage --coverage-reporters=lcov,json-summary
-      - run: npm i -g coverage-badges
-      - run: coverages-badges -s coverage/apps/api/coverage-summary.json -o coverage/badges/api.svg
-      - run: coverages-badges -s coverage/apps/baneverywhere/coverage-summary.json -o coverage/badges/baneverywhere.svg
-      - run: coverages-badges -s coverage/apps/bot/coverage-summary.json -o coverage/badges/bot.svg
-      - run: coverages-badges -s coverage/apps/online-checker/coverage-summary.json -o coverage/badges/online-checker.svg
-      - run: coverages-badges -s coverage/apps/queue-processor/coverage-summary.json -o coverage/badges/queue-processor.svg
-      - run: coverages-badges -s coverage/apps/bot-interfaces/coverage-summary.json -o coverage/badges/bot-interfaces.svg
-      - run: coverages-badges -s coverage/apps/db/coverage-summary.json -o coverage/badges/db.svg
-      - run: coverages-badges -s coverage/apps/error-handler/coverage-summary.json -o coverage/badges/error-handler.svg
-      - run: coverages-badges -s coverage/apps/namespaces/coverage-summary.json -o coverage/badges/namespaces.svg
-      - run: coverages-badges -s coverage/apps/twitch-client/coverage-summary.json -o coverage/badges/twitch-client.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/api/coverage-summary.json -o coverage/badges/api.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/baneverywhere/coverage-summary.json -o coverage/badges/baneverywhere.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/bot/coverage-summary.json -o coverage/badges/bot.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/online-checker/coverage-summary.json -o coverage/badges/online-checker.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/queue-processor/coverage-summary.json -o coverage/badges/queue-processor.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/bot-interfaces/coverage-summary.json -o coverage/badges/bot-interfaces.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/db/coverage-summary.json -o coverage/badges/db.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/error-handler/coverage-summary.json -o coverage/badges/error-handler.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/namespaces/coverage-summary.json -o coverage/badges/namespaces.svg
+      - run: ./node_modules/.bin/coverages-badges -s coverage/apps/twitch-client/coverage-summary.json -o coverage/badges/twitch-client.svg
       - run: npx nx run-many --target=build --all --configuration=production --parallel --max-parallel=2
       - run: npx nx-cloud stop-all-agents
       - name: Set up QEMU
