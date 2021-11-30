@@ -71,6 +71,7 @@ model Actions {
 model Machine {
   id        Int      @id @default(autoincrement())
   uuid      String   @unique
+  lastSeen  DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

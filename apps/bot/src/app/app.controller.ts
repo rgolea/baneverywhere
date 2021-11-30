@@ -15,15 +15,29 @@ import {
   BotPatterns,
 } from '@baneverywhere/bot-interfaces';
 import { Actions } from '@prisma/client';
+import { BotDatabaseService } from '@baneverywhere/db';
 
 @Controller('app')
 export class AppController {
   constructor(
     @Inject(BOT_IDENTIFIER) private readonly botIdentifier: string,
-    private readonly botClientService: BotClientService
+    private readonly botClientService: BotClientService,
+    private readonly dbService: BotDatabaseService
   ) {}
 
-  @MessagePattern(BotPatterns.BOT_CONNECT_CHANNEL)
+  @EventPattern(BotPatterns.BOT_GET_STATUS)
+  async getStatus() {
+    await this.dbService.machine.update({
+      where: {
+        uuid: this.botIdentifier,
+      },
+      data: {
+        lastSeen: new Date()
+      }
+    });
+  }
+
+  @MessagePattern(BotPatterns.USER_ONLINE)
   connectToChannel({
     channelName,
     botId,
@@ -40,7 +54,7 @@ export class AppController {
     }
   }
 
-  @MessagePattern(BotPatterns.BOT_DISCONNECT_CHANNEL)
+  @MessagePattern(BotPatterns.USER_OFFLINE)
   disconnectFromChannel({
     channelName,
   }: BotDisconnectChannelParams): BotGetStatusResponse | Never {

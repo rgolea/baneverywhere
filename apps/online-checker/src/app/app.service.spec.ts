@@ -14,9 +14,12 @@ import { HttpStatus } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { of } from 'rxjs';
 import { BotPatterns } from '@baneverywhere/bot-interfaces';
-import { mock } from "jest-mock-extended";
+import { mock } from 'jest-mock-extended';
+import { ConfigModule } from '@nestjs/config';
 
-const users: User[] = new Array(5).fill(0).map(
+const machineUUID = uuidv4();
+
+const users: User[] = new Array(10).fill(0).map(
   () =>
     ({
       login: internet.userName(),
@@ -32,9 +35,9 @@ describe('AppService', () => {
   let botHandlerClient: ClientProxy;
 
   beforeAll(async () => {
-
     const testingModule = await Test.createTestingModule({
       imports: [
+        ConfigModule,
         ClientsModule.register([
           {
             name: BOT_HANDLER_CONNECTION,
@@ -54,8 +57,15 @@ describe('AppService', () => {
 
     service = testingModule.get<AppService>(AppService);
     dbService = testingModule.get<BotDatabaseService>(BotDatabaseService);
-    twitchClientService = testingModule.get<TwitchClientService>(TwitchClientService);
+    twitchClientService =
+      testingModule.get<TwitchClientService>(TwitchClientService);
     botHandlerClient = testingModule.get<ClientProxy>(BOT_HANDLER_CONNECTION);
+
+    await dbService.machine.create({
+      data: {
+        uuid: machineUUID,
+      },
+    });
 
     await dbService.user.createMany({
       data: users,
@@ -63,11 +73,12 @@ describe('AppService', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks()
-  })
+    jest.resetAllMocks();
+  });
 
   afterAll(async () => {
     await dbService.user.deleteMany({});
+    await dbService.machine.deleteMany({});
   });
 
   describe('Dependency Injection', () => {
@@ -95,11 +106,18 @@ describe('AppService', () => {
     });
 
     it('should check user status', async () => {
+      type OnlineOffline = {
+        user_login: string;
+        type: 'live' | 'offline';
+      };
       const { online, offline } = users
-        .map((u) => ({
-          user_login: u.login,
-          type: random.arrayElement(['live', 'offline']),
-        }))
+        .map(
+          (u) =>
+            ({
+              user_login: u.login,
+              type: random.arrayElement(['live', 'offline']),
+            } as OnlineOffline)
+        )
         .reduce(
           (acc, curr) => {
             if (curr.type === 'live') {
@@ -110,11 +128,13 @@ describe('AppService', () => {
             return acc;
           },
           {
-            online: [],
-            offline: [],
+            online: [] as OnlineOffline[],
+            offline: [] as OnlineOffline[],
           }
         );
-      const response: AxiosResponse<{ data: Array<{ user_login: string; type: string }> }> = {
+      const response: AxiosResponse<{
+        data: Array<{ user_login: string; type: string }>;
+      }> = {
         status: HttpStatus.OK,
         data: {
           data: online,
@@ -123,6 +143,16 @@ describe('AppService', () => {
         statusText: HttpStatus.OK.toString(),
         headers: {},
       };
+      await dbService.user.updateMany({
+        where: {
+          login: {
+            in: offline.map((u) => u.user_login),
+          },
+        },
+        data: {
+          machineUUID,
+        },
+      });
 
       jest
         .spyOn(twitchClientService, 'checkUsersStatus')
@@ -138,10 +168,41 @@ describe('AppService', () => {
         users.map((u) => u.login)
       );
 
-      expect(botHandlerClientEmitMock.mock.calls).toEqual([
-        ...online.map((u) => [BotPatterns.USER_ONLINE, u.user_login]),
-        ...offline.map((u) => [BotPatterns.USER_OFFLINE, u.user_login]),
-      ]);
+      expect(botHandlerClientEmitMock.mock.calls).toEqual(
+        expect.arrayContaining([
+          ...offline.map((u) => [
+            BotPatterns.USER_OFFLINE,
+            {
+              botId: machineUUID,
+              channelName: u.user_login,
+            },
+          ]),
+          ...online.map((u) => [
+            BotPatterns.USER_ONLINE,
+            {
+              botId: machineUUID,
+              channelName: u.user_login,
+            },
+          ]),
+        ])
+      );
+    });
+
+    it('should preassign machine to user', async () => {
+      await dbService.user.update({
+        where: {
+          login: users[0].login
+        },
+        data: {
+          machineUUID: null,
+        }
+      });
+
+      expect(service.preassignMachineToUser).toBeDefined();
+      const machine = await service.preassignMachineToUser(users[0].login);
+      expect(machine).toBeTruthy();
+      expect(machine).toEqual(machineUUID);
+
     });
   });
 });

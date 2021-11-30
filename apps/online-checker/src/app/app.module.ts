@@ -6,9 +6,10 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { BOT_HANDLER_CONNECTION } from "@baneverywhere/namespaces";
 import { TwitchClientModule } from "@baneverywhere/twitch-client";
-
+console.log(ConfigModule);
 @Module({
   imports: [
+    ConfigModule,
     ScheduleModule.forRoot(),
     BotDatabaseModule,
     ClientsModule.registerAsync([
@@ -30,7 +31,7 @@ import { TwitchClientModule } from "@baneverywhere/twitch-client";
         clientSecret: config.get('TWITCH_CLIENT_SECRET'),
       }),
       inject: [ConfigService],
-      imports: [ConfigModule.forRoot()]
+      imports: [ConfigModule]
     })
   ],
   providers: [AppService],
