@@ -16,6 +16,7 @@ import {
 } from '@baneverywhere/bot-interfaces';
 import { Actions } from '@prisma/client';
 import { BotDatabaseService } from '@baneverywhere/db';
+import { logError } from '@baneverywhere/error-handler';
 
 @Controller('app')
 export class AppController {
@@ -26,6 +27,7 @@ export class AppController {
   ) {}
 
   @EventPattern(BotPatterns.BOT_GET_STATUS)
+  @logError()
   async getStatus() {
     await this.dbService.machine.update({
       where: {
@@ -38,6 +40,7 @@ export class AppController {
   }
 
   @MessagePattern(BotPatterns.USER_ONLINE)
+  @logError()
   connectToChannel({
     channelName,
     botId,
@@ -55,6 +58,7 @@ export class AppController {
   }
 
   @MessagePattern(BotPatterns.USER_OFFLINE)
+  @logError()
   disconnectFromChannel({
     channelName,
   }: BotDisconnectChannelParams): BotGetStatusResponse | Never {
@@ -71,6 +75,7 @@ export class AppController {
   }
 
   @EventPattern(BotPatterns.BOT_BAN_USER)
+  @logError()
   banUser(action: Actions) {
     const status = this.botClientService.getStatus();
     const channel = `#${action.queueFor}`;
@@ -82,6 +87,7 @@ export class AppController {
   }
 
   @EventPattern(BotPatterns.BOT_UNBAN_USER)
+  @logError()
   unbanUser(action: Actions) {
     const status = this.botClientService.getStatus();
     const channel = `#${action.queueFor}`;
