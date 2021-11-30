@@ -5,4 +5,4 @@ COPY dist/apps/queue-processor /app
 COPY prisma /app/prisma
 
 RUN npm install
-RUN ./node_modules/.bin/prisma generate
+RUN npm run generate
