@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ClientProxyFactory, ClientsModule, Transport } from '@nestjs/microservices';
 import { BOT_CONNECTION } from "@baneverywhere/namespaces";
 import { TwitchClientModule } from "@baneverywhere/twitch-client";
+import { BullModule } from "@nestjs/bull";
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -19,7 +20,18 @@ import { TwitchClientModule } from "@baneverywhere/twitch-client";
       }),
       inject: [ConfigService],
       imports: [ConfigModule]
-    })
+    }),
+    BullModule.registerQueueAsync({
+      name: 'queue',
+      useFactory: (config: ConfigService) => ({
+        redis: {
+          host: config.get('REDIS_HOST', 'localhost'),
+          port: config.get('REDIS_PORT', 6379),
+        }
+      }),
+      imports: [ConfigModule],
+      inject: [ConfigService]
+    }),
   ],
   providers: [AppService, {
     provide: BOT_CONNECTION,

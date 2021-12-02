@@ -31,7 +31,8 @@ export class ActionsController {
         ...where,
         ...action ? { action } : {},
         queueFor: toUsername,
-        inQueue: false
+        inQueue: false,
+        processed: false
       },
       take,
       ...(cursor ? { cursor } : {}),

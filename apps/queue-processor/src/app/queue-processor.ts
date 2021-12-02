@@ -112,6 +112,7 @@ export class QueueProcessor {
       where: {
         queueFor: username,
         inQueue: true,
+        approved: true,
         processed: false,
       },
       take: 50,

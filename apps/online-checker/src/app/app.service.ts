@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { logError } from '@baneverywhere/error-handler';
 import { TwitchClientService } from '@baneverywhere/twitch-client';
 import { ConfigService } from '@nestjs/config';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -17,7 +19,8 @@ export class AppService implements OnModuleInit {
     public readonly dbService: BotDatabaseService,
     @Inject(BOT_CONNECTION) public botClient: ClientProxy,
     public readonly twitchClientService: TwitchClientService,
-    public readonly configService: ConfigService
+    public readonly configService: ConfigService,
+    @InjectQueue('queue') private readonly queue: Queue,
   ) {
     this.MAX_USERS_PER_BOT = parseInt(
       this.configService.get<string>('MAX_USERS_PER_BOT', '1000')
@@ -163,6 +166,7 @@ export class AppService implements OnModuleInit {
           channelName: user.login,
           botId: machineID,
         });
+        this.queue.add('queue', { username: user.login });
       })
     );
 
