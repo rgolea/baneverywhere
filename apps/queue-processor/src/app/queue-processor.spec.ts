@@ -40,6 +40,7 @@ const actions: Actions[] = new Array(5).fill(0).map(() => {
     moderator: `@${internet.userName()}`,
     streamer: `@${internet.userName()}`,
     inQueue: true,
+    approved: true,
     processed: false,
     queueFor: user.login,
     ...(action === Action.BAN ? { reason: lorem.sentence() } : {}),
@@ -159,6 +160,7 @@ describe('QueueProcessor', () => {
 
     expect(dbService.actions.findMany).toHaveBeenCalledWith({
       where: {
+        approved: true,
         queueFor: user.login,
         inQueue: true,
         processed: false,
