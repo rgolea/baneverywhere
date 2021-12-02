@@ -22,6 +22,7 @@ export class UnbanCommand extends CommandExecutor {
 
     await client
       .unban(channel, user)
+      .then(() => client.say(channel, `Unbanned ${user}. I sent the request to the streamers that follow you.`))
       .catch((err) => {
         console.log(err);
         if(!client.isMod(channel, client.getUsername())) {
@@ -30,7 +31,7 @@ export class UnbanCommand extends CommandExecutor {
           client.say(channel, `${user} might already be banned. I sent the request to the streamers that follow you.`);
         }
       });
-    client.say(channel, `${user} has been unbanned.`);
+
     this.queue.add(Action.UNBAN, {
       action: Action.UNBAN,
       moderator: author.username,

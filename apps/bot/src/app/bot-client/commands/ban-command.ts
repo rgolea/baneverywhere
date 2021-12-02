@@ -26,15 +26,30 @@ export class BanCommand extends CommandExecutor {
       ' '
     )} - by ${author.username}`;
 
-    await client.ban(channel, user, reason).catch((err) => {
-      console.log(err);
-      if(!client.isMod(channel, client.getUsername())) {
-        client.say(channel, `Could not ban ${user} because I am not yet a mod`);
-      } {
-        client.say(channel, `${user} might already be banned. I sent the request to the streamers that follow you.`);
-      }
-    });
-    client.say(channel, `${user} has been banned.`);
+    await client
+      .ban(channel, user, reason)
+      .then(() =>
+        client.say(
+          channel,
+          `Banned ${user}. I sent the request to the streamers that follow you.`
+        )
+      )
+      .catch((err) => {
+        console.log(err);
+        if (!client.isMod(channel, client.getUsername())) {
+          client.say(
+            channel,
+            `Could not ban ${user} because I am not yet a mod`
+          );
+        }
+        {
+          client.say(
+            channel,
+            `${user} might already be banned. I sent the request to the streamers that follow you.`
+          );
+        }
+      });
+
     await this.queue.add(Action.BAN, {
       action: Action.BAN,
       moderator: author.username,

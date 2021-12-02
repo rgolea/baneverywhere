@@ -1,4 +1,4 @@
-import { Controller, Inject, OnModuleInit } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import {
   EventPattern,
   MessagePattern,
@@ -19,7 +19,7 @@ import { BotDatabaseService } from '@baneverywhere/db';
 import { logError } from '@baneverywhere/error-handler';
 
 @Controller('app')
-export class AppController implements OnModuleInit {
+export class AppController {
   constructor(
     @Inject(BOT_IDENTIFIER) private readonly botIdentifier: string,
     private readonly botClientService: BotClientService,
@@ -28,9 +28,6 @@ export class AppController implements OnModuleInit {
 
   }
 
-  onModuleInit() {
-    console.log('get status', this.botClientService.getStatus());
-  }
 
   @EventPattern(BotPatterns.BOT_GET_STATUS)
   @logError()
