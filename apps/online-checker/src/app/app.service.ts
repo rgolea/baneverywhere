@@ -10,6 +10,7 @@ import { TwitchClientService } from '@baneverywhere/twitch-client';
 import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -162,10 +163,10 @@ export class AppService implements OnModuleInit {
       online.map(async (user) => {
         if (user.machineUUID) return;
         const machineID = await this.preassignMachineToUser(user.login);
-        this.botClient.emit(BotPatterns.USER_ONLINE, {
+        await lastValueFrom(this.botClient.send(BotPatterns.USER_ONLINE, {
           channelName: user.login,
           botId: machineID,
-        });
+        }));
         this.queue.add('queue', { username: user.login });
       })
     );
