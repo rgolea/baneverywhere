@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">81.25% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>13/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/4</span>
+                <span class='fraction'>4/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/11</span>
+                <span class='fraction'>12/15</span>
             </div>
         
             
@@ -85,7 +85,14 @@
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
 <a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -105,9 +112,16 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -115,7 +129,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Logger } from '@nestjs/common';
 &nbsp;
-export const logError = (bubble = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span> defaultLogger?: Logger) =&gt; {
+export const logError = (defaultLogger?: Logger) =&gt; {
   return (
     target: unknown,
     propertyKey: string,
@@ -128,19 +142,26 @@ export const logError = (bubble = <span class="branch-0 cbranch-no" title="branc
     //get original method
     const originalMethod = propertyDescriptor.value;
     //redefine descriptor value within own function block
-    propertyDescriptor.value = async function (...args: unknown[]) {
+    propertyDescriptor.value = function (...args: unknown[]) {
       try {
-        return await originalMethod.apply(this, args);
-      } catch (error) {
-        logger.error(error.message, error.stack);
-        // rethrow error, so it can bubble up
-        if (bubble) {
-          throw error;
+        const result = originalMethod.apply(this, args);
+&nbsp;
+        if(result &amp;&amp; result instanceof Promise) {
+          return result.catch(err =&gt; {
+            logger.error(err);
+            throw err;
+          });
         }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return result;</span>
+      } catch (error) {
+<span class="cstat-no" title="statement not covered" >        logger.error(error.message, error.stack);</span>
+<span class="cstat-no" title="statement not covered" >        throw error;</span>
       }
     };
   };
 }
+&nbsp;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -148,7 +169,7 @@ export const logError = (bubble = <span class="branch-0 cbranch-no" title="branc
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Nov 30 2021 22:41:51 GMT+0000 (Coordinated Universal Time)
+                at Thu Dec 02 2021 01:24:27 GMT+0000 (Coordinated Universal Time)
             </div>
         </div>
         <script src="prettify.js"></script>
