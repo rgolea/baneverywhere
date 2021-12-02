@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 
-export const logError = (bubble = true, defaultLogger?: Logger) => {
+export const logError = (defaultLogger?: Logger) => {
   return (
     target: unknown,
     propertyKey: string,
@@ -13,16 +13,23 @@ export const logError = (bubble = true, defaultLogger?: Logger) => {
     //get original method
     const originalMethod = propertyDescriptor.value;
     //redefine descriptor value within own function block
-    propertyDescriptor.value = async function (...args: unknown[]) {
+    propertyDescriptor.value = function (...args: unknown[]) {
       try {
-        return await originalMethod.apply(this, args);
+        const result = originalMethod.apply(this, args);
+
+        if(result && result instanceof Promise) {
+          return result.catch(err => {
+            logger.error(err);
+            throw err;
+          });
+        }
+
+        return result;
       } catch (error) {
         logger.error(error.message, error.stack);
-        // rethrow error, so it can bubble up
-        if (bubble) {
-          throw error;
-        }
+        throw error;
       }
     };
   };
 }
+

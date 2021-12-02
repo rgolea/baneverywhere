@@ -49,6 +49,7 @@ export class BotClientService implements OnModuleInit {
   @logError()
   getStatus(): BotStatus {
     const users = this.client.getChannels() || [];
+    console.log({ users });
     return {
       count: users?.length || 0,
       users,

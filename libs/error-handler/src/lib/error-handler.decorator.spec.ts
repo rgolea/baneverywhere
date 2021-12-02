@@ -6,7 +6,7 @@ const logger = mock<Logger>();
 
 export class ErrorHandlerMockClass {
 
-  @logError(true, logger)
+  @logError(logger)
   public async testMethod() {
     throw new Error('test error');
   }

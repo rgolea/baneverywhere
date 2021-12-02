@@ -1,4 +1,4 @@
-import { Controller, Inject } from '@nestjs/common';
+import { Controller, Inject, OnModuleInit } from '@nestjs/common';
 import {
   EventPattern,
   MessagePattern,
@@ -19,12 +19,18 @@ import { BotDatabaseService } from '@baneverywhere/db';
 import { logError } from '@baneverywhere/error-handler';
 
 @Controller('app')
-export class AppController {
+export class AppController implements OnModuleInit {
   constructor(
     @Inject(BOT_IDENTIFIER) private readonly botIdentifier: string,
     private readonly botClientService: BotClientService,
     private readonly dbService: BotDatabaseService
-  ) {}
+  ) {
+
+  }
+
+  onModuleInit() {
+    console.log('get status', this.botClientService.getStatus());
+  }
 
   @EventPattern(BotPatterns.BOT_GET_STATUS)
   @logError()
@@ -48,7 +54,7 @@ export class AppController {
     const status = this.botClientService.getStatus();
     if (
       botId === this.botIdentifier &&
-      !status.users?.includes(`#${channelName}`)
+      !status.users.includes(`#${channelName}`)
     ) {
       return this.botClientService.joinChannel(channelName).then((status) => ({
         status,
@@ -64,7 +70,7 @@ export class AppController {
     channelName,
   }: BotDisconnectChannelParams): BotGetStatusResponse | Never {
     const status = this.botClientService.getStatus();
-    if (status.users?.includes(`#${channelName}`)) {
+    if (status.users.includes(`#${channelName}`)) {
       this.botClientService.leaveChannel(channelName);
       return {
         status: this.botClientService.getStatus(),
