@@ -15,6 +15,11 @@ export class ErrorHandlerMockClass {
   public testSyncMethod() {
     throw new Error('test sync error');
   }
+
+  @logError(logger)
+  public testReturnWithValue() {
+    return 'value';
+  }
 }
 
 describe('ErrorHandlerDecorator', () => {
@@ -40,5 +45,9 @@ describe('ErrorHandlerDecorator', () => {
   it('should log the sync error', () => {
     expect(() => errorHandlerMockClass.testSyncMethod()).toThrow('test sync error');
     logger.error.calledWith('test sync error');
+  });
+
+  it('should return value', () => {
+    expect(errorHandlerMockClass.testReturnWithValue()).toBe('value');
   });
 });
