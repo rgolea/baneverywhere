@@ -7,8 +7,13 @@ const logger = mock<Logger>();
 export class ErrorHandlerMockClass {
 
   @logError(logger)
-  public async testMethod() {
-    throw new Error('test error');
+  public async testAsyncMethod() {
+    throw new Error('test async error');
+  }
+
+  @logError(logger)
+  public testSyncMethod() {
+    throw new Error('test sync error');
   }
 }
 
@@ -19,12 +24,21 @@ describe('ErrorHandlerDecorator', () => {
     errorHandlerMockClass = new ErrorHandlerMockClass();
   });
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(logError).toBeDefined();
   });
 
-  it('should log the error', () => {
-    expect(errorHandlerMockClass.testMethod()).rejects.toThrow('test error');
-    logger.error.calledWith('test error');
+  it('should log the async error', () => {
+    expect(errorHandlerMockClass.testAsyncMethod()).rejects.toThrow('test async error');
+    logger.error.calledWith('test async error');
+  });
+
+  it('should log the sync error', () => {
+    expect(() => errorHandlerMockClass.testSyncMethod()).toThrow('test sync error');
+    logger.error.calledWith('test sync error');
   });
 });
