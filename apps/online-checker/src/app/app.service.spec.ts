@@ -16,6 +16,8 @@ import { of } from 'rxjs';
 import { BotPatterns } from '@baneverywhere/bot-interfaces';
 import { mock } from 'jest-mock-extended';
 import { ConfigModule } from '@nestjs/config';
+import { BullModule, getQueueToken } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 const machineUUID = uuidv4();
 
@@ -34,10 +36,15 @@ describe('AppService', () => {
   let twitchClientService: TwitchClientService;
   let botClient: ClientProxy;
 
+  const queue = mock<Queue>();
+
   beforeAll(async () => {
     const testingModule = await Test.createTestingModule({
       imports: [
         ConfigModule,
+        BullModule.registerQueue({
+          name: 'queue',
+        }),
         ClientsModule.register([
           {
             name: BOT_CONNECTION,
@@ -53,6 +60,8 @@ describe('AppService', () => {
     })
       .overrideProvider(TwitchClientService)
       .useValue(mock<TwitchClientService>())
+      .overrideProvider(getQueueToken('queue'))
+      .useValue(queue)
       .compile();
 
     service = testingModule.get<AppService>(AppService);
@@ -167,6 +176,8 @@ describe('AppService', () => {
       expect(twitchClientService.checkUsersStatus).toHaveBeenLastCalledWith(
         users.map((u) => u.login)
       );
+
+      expect(queue.add).toHaveBeenCalledTimes(online.length);
 
       expect(botHandlerClientEmitMock.mock.calls).toEqual(
         expect.arrayContaining([
