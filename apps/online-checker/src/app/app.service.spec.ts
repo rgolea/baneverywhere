@@ -31,10 +31,10 @@ const users: User[] = new Array(10).fill(0).map(
     } as User)
 );
 describe('AppService', () => {
+  const botClient = mock<ClientProxy>();
   let service: AppService;
   let dbService: BotDatabaseService;
   let twitchClientService: TwitchClientService;
-  let botClient: ClientProxy;
 
   const queue = mock<Queue>();
 
@@ -62,13 +62,14 @@ describe('AppService', () => {
       .useValue(mock<TwitchClientService>())
       .overrideProvider(getQueueToken('queue'))
       .useValue(queue)
+      .overrideProvider(BOT_CONNECTION)
+      .useValue(botClient)
       .compile();
 
     service = testingModule.get<AppService>(AppService);
     dbService = testingModule.get<BotDatabaseService>(BotDatabaseService);
     twitchClientService =
       testingModule.get<TwitchClientService>(TwitchClientService);
-    botClient = testingModule.get<ClientProxy>(BOT_CONNECTION);
 
     await dbService.machine.create({
       data: {
@@ -167,9 +168,7 @@ describe('AppService', () => {
         .spyOn(twitchClientService, 'checkUsersStatus')
         .mockImplementation(() => Promise.resolve(response));
 
-      const botHandlerClientEmitMock = jest
-        .spyOn(botClient, 'emit')
-        .mockImplementation(() => of(null));
+      botClient.send.mockImplementation(() => of(null));
 
       await service.checkIfUserIsOnline();
 
@@ -179,17 +178,22 @@ describe('AppService', () => {
 
       expect(queue.add).toHaveBeenCalledTimes(online.length);
 
-      expect(botHandlerClientEmitMock.mock.calls).toEqual(
+      expect(botClient.send.mock.calls).toEqual(
         expect.arrayContaining([
-          ...offline.map((u) => [
-            BotPatterns.USER_OFFLINE,
+          ...online.map((u) => [
+            BotPatterns.USER_ONLINE,
             {
               botId: machineUUID,
               channelName: u.user_login,
             },
           ]),
-          ...online.map((u) => [
-            BotPatterns.USER_ONLINE,
+        ])
+      );
+
+      expect(botClient.emit.mock.calls).toEqual(
+        expect.arrayContaining([
+          ...offline.map((u) => [
+            BotPatterns.USER_OFFLINE,
             {
               botId: machineUUID,
               channelName: u.user_login,
