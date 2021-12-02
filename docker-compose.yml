@@ -16,6 +16,7 @@ services:
     command: npx prisma migrate deploy
     container_name: baneverywhere-migration
     tty: true
+    restart: never
     env_file: /.env
     depends_on:
       - postgres
@@ -26,7 +27,7 @@ services:
     container_name: api-baneverywhere
     stdin_open: true
     tty: true
-    restart: unless-stopped
+    restart: always
     expose:
       - 3333
     env_file: /.env
@@ -41,10 +42,13 @@ services:
     container_name: bot-baneverywhere
     stdin_open: true
     tty: true
-    restart: unless-stopped
+    restart: always
     env_file: /.env
     depends_on:
       - redis
+    deploy:
+      mode: replicated
+      replicas: 2
 
   online-checker:
     image: rgolea/baneverywhere-online-checker:latest
@@ -52,7 +56,7 @@ services:
     container_name: online-checker-baneverywhere
     stdin_open: true
     tty: true
-    restart: unless-stopped
+    restart: always
     env_file: /.env
     depends_on:
       - redis
@@ -65,7 +69,7 @@ services:
     container_name: queue-processor-baneverywhere
     stdin_open: true
     tty: true
-    restart: unless-stopped
+    restart: always
     env_file: /.env
     depends_on:
       - redis
@@ -75,7 +79,7 @@ services:
   postgres:
     image: postgres:10
     container_name: postgres-baneverywhere
-    restart: unless-stopped
+    restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -95,7 +99,7 @@ services:
   redis:
     image: redis:6.2.6
     container_name: redis-baneverywhere
-    restart: unless-stopped
+    restart: always
     command: redis-server
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
