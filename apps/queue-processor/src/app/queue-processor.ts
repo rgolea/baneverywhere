@@ -68,8 +68,8 @@ export class QueueProcessor {
           data: {
             ...data,
             queueFor: setting.toUsername,
-            inQueue: true,
-            approved: preapproved,
+            inQueue: BanEverywhereSettings.AUTOMATIC === setting.settings,
+            approved: BanEverywhereSettings.AUTOMATIC === setting.settings,
             processed: preapproved,
           },
         });
@@ -112,7 +112,6 @@ export class QueueProcessor {
       where: {
         queueFor: username,
         inQueue: true,
-        approved: true,
         processed: false,
       },
       take: 50,
@@ -127,7 +126,9 @@ export class QueueProcessor {
       });
     }
 
-    actions.forEach((action) => {
+    const approved = actions.filter(action => action.approved);
+
+    approved.forEach((action) => {
       const pattern =
         action.action === Action.BAN
           ? BotPatterns.BOT_BAN_USER
