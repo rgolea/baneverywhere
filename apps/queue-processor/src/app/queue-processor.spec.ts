@@ -160,7 +160,6 @@ describe('QueueProcessor', () => {
 
     expect(dbService.actions.findMany).toHaveBeenCalledWith({
       where: {
-        approved: true,
         queueFor: user.login,
         inQueue: true,
         processed: false,
