@@ -172,7 +172,6 @@ export class QueueProcessor {
     ]);
     const user = users.find((u) => u.login === username);
     const channel = users.find((u) => u.login === channelName);
-    console.log(user, channel);
     if (!user || !channel) return;
     await this.dbService.settings.upsert({
       where: {
