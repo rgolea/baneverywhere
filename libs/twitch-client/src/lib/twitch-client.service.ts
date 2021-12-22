@@ -42,6 +42,26 @@ export class TwitchClientService {
   }
 
   @logError()
+  public async findUsernamesByLogin(logins: string[]) {
+    const accessToken = await this.getAccessToken();
+    const url = `https://api.twitch.tv/helix/users?login=${logins.join('&login=')}`;
+
+    const { data } = await lastValueFrom(
+      this.http.get<{ data: Array<{ id: string, login: string }> }>(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Client-Id': this.opts.clientID,
+          },
+        }
+      )
+    );
+
+    return data.data;
+  }
+
+  @logError()
   public async checkUsersStatus(logins: string[]) {
     const accessToken = await this.getAccessToken();
 

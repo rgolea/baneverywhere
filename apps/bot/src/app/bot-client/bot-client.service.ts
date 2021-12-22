@@ -11,6 +11,7 @@ import { Actions } from '@prisma/client';
 import { channelToUsername } from './utils';
 import { PingCommand } from './commands/ping-command';
 import { logError } from '@baneverywhere/error-handler';
+import { SettingsCommand } from './commands/settings-command';
 
 @Injectable()
 export class BotClientService implements OnModuleInit {
@@ -25,6 +26,7 @@ export class BotClientService implements OnModuleInit {
     commander.registerCommand('!ban*', new BanCommand(this.queue));
     commander.registerCommand('!unban*', new UnbanCommand(this.queue));
     commander.registerCommand('!ping*', new PingCommand());
+    commander.registerCommand('!settings*', new SettingsCommand(this.queue));
   }
 
   @logError()
