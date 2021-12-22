@@ -1,17 +1,19 @@
 import { logError } from '@baneverywhere/error-handler';
 import { CommandExecutor, CommandOrigins } from 'tmijs-commander';
-import { channelToUsername } from "../utils";
+import { Validate } from '../utils';
 
 export class PingCommand extends CommandExecutor {
-
+  @Validate({
+    MODERATOR: true,
+    STREAMER: true,
+    USER: (author: CommandOrigins['author']) =>
+      ['rgolea'].includes(author.username),
+  })
   @logError()
   public async invoke({
     channel,
     client,
-    author
   }: CommandOrigins): Promise<void> {
-    if (!author.mod && author.username !== channelToUsername(channel, '') && author.username !== 'rgolea')
-      return;
-    client.say(channel, 'pong');
+    client.say(channel, 'ping');
   }
 }

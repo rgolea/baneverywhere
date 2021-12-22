@@ -1,5 +1,5 @@
 import { CommandExecutor, CommandOrigins } from 'tmijs-commander';
-import { channelToUsername } from '../utils';
+import { channelToUsername, Validate } from '../utils';
 import { Action } from '@prisma/client';
 import { Queue } from 'bull';
 import { logError } from '@baneverywhere/error-handler';
@@ -8,6 +8,10 @@ export class BanCommand extends CommandExecutor {
     super();
   }
 
+  @Validate({
+    MODERATOR: true,
+    STREAMER: true
+  })
   @logError()
   public async invoke({
     author,
