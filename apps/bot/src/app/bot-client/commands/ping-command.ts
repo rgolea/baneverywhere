@@ -14,6 +14,6 @@ export class PingCommand extends CommandExecutor {
     channel,
     client,
   }: CommandOrigins): Promise<void> {
-    client.say(channel, 'ping');
+    client.say(channel, 'pong');
   }
 }
