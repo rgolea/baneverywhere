@@ -8,13 +8,15 @@ import { BOT_CONNECTION } from '@baneverywhere/namespaces';
 import { ClientProxy } from '@nestjs/microservices';
 import { BotPatterns } from '@baneverywhere/bot-interfaces';
 import { logError } from '@baneverywhere/error-handler';
+import { TwitchClientService } from '@baneverywhere/twitch-client';
 
 @Processor('queue')
 export class QueueProcessor {
   constructor(
     private readonly dbService: BotDatabaseService,
     @InjectQueue('queue') private readonly queue: Queue,
-    @Inject(BOT_CONNECTION) private readonly botHandlerClient: ClientProxy
+    @Inject(BOT_CONNECTION) private readonly botHandlerClient: ClientProxy,
+    private readonly twitchService: TwitchClientService
   ) {}
 
   @logError()
@@ -152,5 +154,43 @@ export class QueueProcessor {
     } else {
       return;
     }
+  }
+
+  @Process('settings')
+  @logError()
+  async handleSettings(
+    job: Job<{
+      channelName: string;
+      settings: BanEverywhereSettings;
+      username: string;
+    }>
+  ) {
+    const { channelName, settings, username } = job.data;
+    const users = await this.twitchService.findUsernamesByLogin([
+      channelName,
+      username,
+    ]);
+    const user = users.find((u) => u.login === username);
+    const channel = users.find((u) => u.login === channelName);
+    console.log(user, channel);
+    if (!user || !channel) return;
+    await this.dbService.settings.upsert({
+      where: {
+        fromId_toId: {
+          fromId: user.id,
+          toId: channel.id,
+        },
+      },
+      create: {
+        fromId: user.id,
+        toId: channel.id,
+        toUsername: channel.login,
+        fromUsername: user.login,
+        settings,
+      },
+      update: {
+        settings,
+      },
+    });
   }
 }
