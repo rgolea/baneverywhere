@@ -17,6 +17,7 @@ import {
 import { internet, name, lorem, random } from 'faker';
 import { v4 as uuidv4 } from 'uuid';
 import { of } from 'rxjs';
+import { TwitchClientModule, TwitchClientService } from '@baneverywhere/twitch-client';
 
 const machineUUID = uuidv4();
 const users: User[] = new Array(4).fill(0).map(
@@ -83,9 +84,15 @@ describe('QueueProcessor', () => {
             transport: Transport.TCP,
           },
         ]),
+        TwitchClientModule.forRoot({
+          clientID: 'test',
+          clientSecret: 'test',
+        })
       ],
-      providers: [QueueProcessor, BotDatabaseService],
+      providers: [QueueProcessor, BotDatabaseService, TwitchClientService],
     })
+      .overrideProvider(TwitchClientService)
+      .useValue(mock<TwitchClientService>())
       .overrideProvider(getQueueToken('queue'))
       .useValue(queue)
       .compile();
