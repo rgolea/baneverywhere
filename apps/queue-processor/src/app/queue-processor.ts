@@ -170,9 +170,11 @@ export class QueueProcessor {
       channelName,
       username,
     ]);
-    const user = users.find((u) => u.login === username);
-    const channel = users.find((u) => u.login === channelName);
+
+    const user = users.find((u) => u.login.toLowerCase() === username.toLowerCase());
+    const channel = users.find((u) => u.login.toLowerCase() === channelName.toLowerCase());
     if (!user || !channel) return;
+
     await this.dbService.settings.upsert({
       where: {
         fromId_toId: {

@@ -14,8 +14,7 @@ export async function botClientFactory(
     identity: {
       username: opts.username,
       password: `oauth:${opts.accessToken}`,
-    },
-    channels: ['rgolea']
+    }
   });
 
   await client.connect().catch(err => console.error(err));
