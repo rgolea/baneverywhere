@@ -6,17 +6,17 @@ const logger = mock<Logger>();
 
 export class ErrorHandlerMockClass {
 
-  @logError(logger)
+  @logError({ defaultLogger: logger, propagate: true })
   public async testAsyncMethod() {
     throw new Error('test async error');
   }
 
-  @logError(logger)
+  @logError({ defaultLogger: logger, propagate: true })
   public testSyncMethod() {
     throw new Error('test sync error');
   }
 
-  @logError(logger)
+  @logError({ defaultLogger: logger, propagate: true })
   public testReturnWithValue() {
     return 'value';
   }

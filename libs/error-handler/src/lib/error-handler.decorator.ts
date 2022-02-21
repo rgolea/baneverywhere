@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 
-export const logError = (defaultLogger?: Logger) => {
+export const logError = ({ defaultLogger, propagate = true }: { defaultLogger?: Logger, propagate?: boolean } = {}) => {
   return (
     target: unknown,
     propertyKey: string,
@@ -27,7 +27,9 @@ export const logError = (defaultLogger?: Logger) => {
         return result;
       } catch (error) {
         logger.error(error.message, error.stack);
-        throw error;
+        if(propagate){
+          throw error;
+        }
       }
     };
   };

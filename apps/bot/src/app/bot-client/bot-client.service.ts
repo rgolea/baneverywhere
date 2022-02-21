@@ -29,7 +29,9 @@ export class BotClientService implements OnModuleInit {
     commander.registerCommand('!settings*', new SettingsCommand(this.queue));
   }
 
-  @logError()
+  @logError({
+    propagate: false
+  })
   async joinChannel(channel: string) {
     await this.client.join(channel);
     if (
@@ -42,7 +44,9 @@ export class BotClientService implements OnModuleInit {
     return this.getStatus();
   }
 
-  @logError()
+  @logError({
+    propagate: false
+  })
   async leaveChannel(channel: string) {
     await this.client.part(channel);
     return this.getStatus();
@@ -57,17 +61,23 @@ export class BotClientService implements OnModuleInit {
     };
   }
 
-  @logError()
+  @logError({
+    propagate: false
+  })
   banUser(channel: string, action: Actions) {
     this.client.ban(channel, action.user, action.reason);
   }
 
-  @logError()
+  @logError({
+    propagate: false
+  })
   unbanUser(channel: string, action: Actions) {
     this.client.unban(channel, action.user);
   }
 
-  @logError()
+  @logError({
+    propagate: false
+  })
   sendToAll(message: string) {
     this.client
       .getChannels()
