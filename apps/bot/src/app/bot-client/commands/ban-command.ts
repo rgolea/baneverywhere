@@ -19,8 +19,6 @@ export class BanCommand extends CommandExecutor {
     client,
     arguments: args,
   }: CommandOrigins): Promise<void> {
-    if (!author.mod && author.username !== channelToUsername(channel, ''))
-      return;
     const [user, ...reasonArr] = args;
     if (!reasonArr.filter(Boolean).length) {
       client.say(channel, `Please insert a reason for banning this user.`);
