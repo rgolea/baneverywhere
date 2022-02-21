@@ -45,13 +45,13 @@
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@nestjs/axios": "0.0.6",
     "@nestjs/bull": "0.5.0",
-    "@nestjs/common": "8.3.1",
+    "@nestjs/common": "^8.0.0",
     "@nestjs/config": "1.2.0",
-    "@nestjs/core": "8.3.1",
+    "@nestjs/core": "^8.0.0",
     "@nestjs/jwt": "8.0.0",
     "@nestjs/microservices": "8.3.1",
     "@nestjs/passport": "8.2.1",
-    "@nestjs/platform-express": "8.3.1",
+    "@nestjs/platform-express": "^8.0.0",
     "@nestjs/schedule": "1.0.2",
     "@ngxs/devtools-plugin": "^3.7.2",
     "@ngxs/logger-plugin": "^3.7.2",
@@ -94,8 +94,8 @@
     "@angular/compiler-cli": "13.2.3",
     "@angular/language-service": "13.2.3",
     "@capacitor/cli": "^3.2.5",
-    "@nestjs/schematics": "8.0.4",
-    "@nestjs/testing": "8.1.1",
+    "@nestjs/schematics": "^8.0.0",
+    "@nestjs/testing": "^8.0.0",
     "@nrwl/cli": "13.8.3",
     "@nrwl/cypress": "13.8.3",
     "@nrwl/eslint-plugin-nx": "13.8.3",
@@ -136,4 +136,3 @@
     "node": "<16.13.0"
   }
 }
-

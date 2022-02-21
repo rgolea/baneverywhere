@@ -18,13 +18,9 @@
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "test",
-          "e2e"
-        ],
-        "accessToken": "MzQyODE3NWEtYTlkMi00M2E5LWFmMDItNjgyZmQ1M2I4N2E0fHJlYWQ="
+        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "accessToken": "MzQyODE3NWEtYTlkMi00M2E5LWFmMDItNjgyZmQ1M2I4N2E0fHJlYWQ=",
+        "parallel": 1
       }
     }
   },
@@ -59,7 +55,6 @@
       "e2eTestRunner": "cypress"
     },
     "@nrwl/angular:library": {
-      "style": "scss",
       "linter": "eslint",
       "unitTestRunner": "jest"
     },
